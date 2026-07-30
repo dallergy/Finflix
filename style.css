@@ -1,0 +1,2363 @@
+/* ============================================================
+   ABYSS NET v2 — Ultimate Jellyfin Theme
+   Base: your Abyss Net  ·  Fixes: brand red, a11y, tabs,
+   progress, multiselect, login, hover/TV, detail polish
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap");
+
+@font-face {
+  font-family: "Material Icons Round";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://cdn.jsdelivr.net/npm/material-icons@1.13.12/iconfont/material-icons-round.woff2)
+    format("woff2");
+}
+
+/* ============================================================
+   1. DESIGN TOKENS
+   ============================================================ */
+:root {
+  color-scheme: dark;
+
+  /* Accent — true Netflix red (was 204,0,0 Netfin)
+     Mute option: 204, 0, 0 */
+  --af-accent-r: 229;
+  --af-accent-g: 9;
+  --af-accent-b: 20;
+  --af-accent: var(--af-accent-r), var(--af-accent-g), var(--af-accent-b);
+  --af-accent-bright: 255, 31, 31;
+  --af-accent-soft: 255, 77, 77;
+
+  --af-bg-0: #000000;
+  --af-bg-1: #0a0a0a;
+  --af-bg-2: #121212;
+  --af-bg-3: #140404;
+  --af-surface: 10, 10, 10;
+  --af-glass: 14, 6, 6;
+  --af-text: 245, 245, 247;
+  --af-text-dim: 163, 163, 163;
+
+  --af-border: rgba(var(--af-accent), 0.28);
+  --af-border-strong: rgba(var(--af-accent), 0.55);
+  --af-border-subtle: rgba(255, 255, 255, 0.08);
+
+  --af-radius: 12px;
+  --af-radius-sm: 8px;
+  --af-radius-lg: 18px;
+  --af-radius-pill: 999px;
+
+  --af-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --af-ease-snappy: cubic-bezier(0.4, 0, 0.2, 1);
+  --af-duration: 0.35s;
+
+  --af-blur-sm: 6px;
+  --af-blur-md: 12px;
+  --af-blur-lg: 20px;
+
+  --af-side-pad: 3.3%;
+  --af-header-h: 5em;
+  --af-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --af-inset-glass: inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+
+  --af-icons: "Material Icons Round", "Material Icons";
+
+  --af-bg-gradient: linear-gradient(180deg, #000 0%, #0a0404 42%, #000 100%);
+  --af-header-fade: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.96) 25%,
+    rgba(0, 0, 0, 0.55) 65%,
+    transparent 100%
+  );
+  --af-card-footer: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.94) 0%,
+    rgba(0, 0, 0, 0.4) 55%,
+    transparent 100%
+  );
+  --af-osd-top: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+  --af-osd-bottom: linear-gradient(0deg, rgba(0, 0, 0, 0.94) 0%, transparent 100%);
+  --af-title-line: linear-gradient(
+    90deg,
+    rgb(var(--af-accent)) 0%,
+    rgba(var(--af-accent), 0.75) 35%,
+    rgba(var(--af-accent), 0.22) 70%,
+    transparent 100%
+  );
+  --af-hover-shimmer-v: linear-gradient(
+    0deg,
+    transparent,
+    rgba(var(--af-accent), 0.28) 45%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(var(--af-accent), 0.28) 55%,
+    transparent
+  );
+  --af-hover-shimmer-h: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--af-accent), 0.28) 45%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(var(--af-accent), 0.28) 55%,
+    transparent
+  );
+
+  --af-played: 34, 197, 94;
+  --af-favorite: 229, 9, 20;
+
+  /* "" to hide brand line */
+  --af-footer-text: "Abyss Net";
+}
+
+/* ============================================================
+   2. BASE
+   ============================================================ */
+#reactRoot {
+  scrollbar-gutter: stable;
+}
+
+html {
+  font-family: "Rajdhani", "Segoe UI", system-ui, sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 450;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+body {
+  font-family: "Rajdhani", "Segoe UI", system-ui, sans-serif;
+  overscroll-behavior: none;
+  color: rgb(var(--af-text));
+  background: var(--af-bg-0);
+}
+
+.material-icons,
+.material-icons-round,
+.material-symbols-rounded,
+[class*="material-icons"] {
+  font-family: var(--af-icons) !important;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  scrollbar-color: rgba(var(--af-accent), 0.65) transparent !important;
+  accent-color: rgb(var(--af-accent));
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--af-accent), 0.55) !important;
+  border-radius: var(--af-radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--af-accent)) !important;
+}
+
+::selection {
+  background: rgba(var(--af-accent), 0.35);
+  color: #fff;
+}
+::-moz-selection {
+  background: rgba(var(--af-accent), 0.35);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(var(--af-accent), 0.7) !important;
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   3. BACKGROUNDS
+   ============================================================ */
+html,
+.backgroundContainer:not(.withBackdrop),
+.backdropContainer,
+.nowPlayingPlaylist,
+.nowPlayingContextMenu {
+  background: var(--af-bg-gradient) !important;
+  background-color: var(--af-bg-0) !important;
+}
+
+.backgroundContainer.withBackdrop {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.32) 0%,
+    rgba(0, 0, 0, 0.72) 48%,
+    rgba(0, 0, 0, 0.94) 100%
+  ) !important;
+  opacity: 1;
+}
+
+.withSectionTabs .backgroundContainer.withBackdrop,
+.layout-mobile .backgroundContainer.withBackdrop {
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+.backdropImage {
+  filter: blur(18px) saturate(130%) contrast(115%) brightness(42%) !important;
+}
+
+body:has(#itemDetailPage) .backdropImage,
+.withSectionTabs .backdropImage {
+  filter: blur(22px) saturate(125%) contrast(118%) brightness(28%) !important;
+}
+
+.backdropContainer {
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
+}
+
+.blurhash-canvas {
+  filter: opacity(0.55) saturate(0.7);
+}
+
+.defaultCardBackground1 {
+  background-color: #0a0a0a;
+}
+.defaultCardBackground2 {
+  background-color: #121212;
+}
+.defaultCardBackground3 {
+  background-color: #1a1a1a;
+}
+.defaultCardBackground4 {
+  background-color: #222;
+}
+.defaultCardBackground5 {
+  background-color: #2a2a2a;
+}
+
+/* ============================================================
+   4. TYPOGRAPHY
+   ============================================================ */
+h1,
+h2,
+.pageTitle,
+.formDialogHeaderTitle {
+  font-family: "Orbitron", "Rajdhani", sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.sectionTitle,
+h2.sectionTitle,
+.sectionTitle-cards {
+  font-family: "Orbitron", "Rajdhani", sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: rgba(var(--af-text), 0.9) !important;
+  display: inline-block !important;
+  position: relative !important;
+  padding-bottom: 8px !important;
+  margin: 0.35em 0 0.55em !important;
+  overflow: visible !important;
+}
+
+.sectionTitle::after,
+h2.sectionTitle::after,
+.sectionTitle-cards::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: 0;
+  bottom: 0;
+  width: max(160%, 140px) !important;
+  height: 2px !important;
+  background: var(--af-title-line) !important;
+  pointer-events: none;
+  transition: width 0.3s var(--af-ease);
+}
+
+.sectionTitleTextButton:hover .sectionTitle,
+.sectionTitleButton:hover .sectionTitle {
+  color: rgb(var(--af-accent-soft)) !important;
+}
+
+.sectionTitleTextButton:hover .sectionTitle::after,
+.sectionTitleButton:hover .sectionTitle::after {
+  width: max(230%, 220px) !important;
+}
+
+.sectionTitleTextButton:hover .material-icons,
+.sectionTitleButton:hover .material-icons {
+  color: rgb(var(--af-accent-soft)) !important;
+  animation: af-arrow-nudge 0.85s var(--af-ease) infinite;
+}
+
+@keyframes af-arrow-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(5px);
+  }
+}
+
+.cardText {
+  font-weight: 500;
+  font-size: 0.95rem;
+  opacity: 0.85;
+  color: rgb(var(--af-text));
+}
+
+.cardText-first {
+  font-weight: 650 !important;
+  font-size: 1.05rem !important;
+  opacity: 1 !important;
+  margin-top: 4px !important;
+}
+
+.cardTextCentered,
+.cardTextCentered > .textActionButton {
+  text-align: left !important;
+}
+
+.card-hoverable:hover .cardText,
+.card-hoverable:hover .cardText-secondary {
+  color: rgb(var(--af-accent-soft)) !important;
+  transition: color 0.2s var(--af-ease);
+}
+
+.inputLabel,
+.selectLabel,
+.checkboxLabel {
+  font-weight: 550;
+}
+
+.tagline {
+  font-size: 1.25em;
+  font-style: italic;
+  font-weight: 400;
+  color: rgb(var(--af-text));
+}
+
+.starIcon {
+  background: linear-gradient(90deg, rgb(var(--af-accent)), #ff6666);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ============================================================
+   5. HEADER + SECTION TABS
+   ============================================================ */
+.skinHeader {
+  background-color: transparent !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.skinHeader.semiTransparent,
+.skinHeader-withBackground.semiTransparent {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+.skinHeader-blurred:not(.osdHeader):not(.semiTransparent) {
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(var(--af-blur-lg)) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(var(--af-blur-lg)) saturate(140%) !important;
+  border-bottom: 1px solid var(--af-border) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.skinHeader-withBackground:not(.semiTransparent):not(.osdHeader) {
+  background: var(--af-header-fade);
+}
+
+.headerTop {
+  padding: 0.55em 0 !important;
+  min-height: 3.4em;
+  align-items: center;
+  height: auto;
+}
+
+.headerLeft,
+.headerRight {
+  padding: 0 1.5rem;
+  align-items: center;
+}
+
+.headerUserButton,
+.headerUserButtonRound {
+  border-radius: 50% !important;
+  border: 1px solid var(--af-border) !important;
+}
+
+.pageTitle {
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  opacity: 0.9;
+  letter-spacing: 0.06em;
+}
+
+.pageTitle.pageTitleWithLogo.pageTitleWithDefaultLogo,
+#tvRecommendedPage .pageTitle,
+#moviesPage .pageTitle,
+#musicRecommendedPage .pageTitle,
+#itemDetailPage .pageTitle {
+  display: none !important;
+}
+
+#videoOsdPage .pageTitle {
+  display: flex !important;
+}
+
+.headerTabs.sectionTabs,
+.sectionTabs {
+  width: fit-content;
+  max-width: 95vw;
+  align-self: center !important;
+  border-radius: var(--af-radius-pill);
+  font-size: 105%;
+}
+
+.emby-tabs-slider {
+  border-radius: var(--af-radius-pill);
+  padding: 4px;
+  overflow: auto;
+  scrollbar-width: none;
+  background: rgba(var(--af-glass), 0.84);
+  border: 1px solid var(--af-border);
+  box-shadow: var(--af-shadow), var(--af-inset-glass);
+  backdrop-filter: blur(var(--af-blur-md));
+  -webkit-backdrop-filter: blur(var(--af-blur-md));
+}
+
+.emby-tabs-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.emby-tab-button {
+  padding: 0.45em 1.35em !important;
+  margin: 0 2px !important;
+  border-radius: var(--af-radius-pill) !important;
+  font-family: "Rajdhani", sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em;
+  color: rgba(var(--af-text), 0.75) !important;
+  transition:
+    background var(--af-duration) var(--af-ease),
+    color var(--af-duration) var(--af-ease) !important;
+}
+
+.emby-tab-button-active {
+  background: rgb(var(--af-accent)) !important;
+  color: #fff !important;
+  box-shadow: 0 0 18px rgba(var(--af-accent), 0.4);
+}
+
+.emby-tab-button:hover:not(.emby-tab-button-active) {
+  color: rgb(var(--af-accent-soft)) !important;
+  background: rgba(var(--af-accent), 0.12) !important;
+}
+
+/* Desktop: nest tabs into header row (Netfin-grade) */
+@media all and (min-width: 75em) {
+  .sectionTabs {
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    margin-top: calc(-1 * var(--af-header-h) + 0.35em) !important;
+    position: relative;
+    width: auto;
+  }
+
+  .headerTabs.sectionTabs {
+    margin-top: calc(-1 * var(--af-header-h) + 0.35em) !important;
+  }
+
+  .libraryPage:not(.noSecondaryNavPage) {
+    padding-top: calc(var(--af-header-h) + 0.85em) !important;
+  }
+
+  .headroom--unpinned:not(.osdHeader) {
+    transform: translateY(0) !important;
+  }
+}
+
+/* ============================================================
+   6. DRAWER / NAV
+   ============================================================ */
+.mainDrawer,
+.editPageSidebar,
+.drawer-open {
+  background: rgba(var(--af-glass), 0.9) !important;
+  backdrop-filter: blur(var(--af-blur-lg)) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(var(--af-blur-lg)) saturate(140%) !important;
+  border: 1px solid var(--af-border) !important;
+  border-radius: 28px !important;
+  margin: 20px 0 !important;
+  box-shadow: var(--af-shadow);
+}
+
+.mainDrawer.drawer-open {
+  margin: 20px !important;
+}
+
+.sidebarHeader,
+.mainDrawer-scrollContainer > h3 {
+  font-family: "Orbitron", sans-serif !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: rgba(var(--af-text), 0.38) !important;
+  font-weight: 600 !important;
+  margin: 1.1em 1em 0.35em !important;
+}
+
+.navMenuOption {
+  border-radius: var(--af-radius) !important;
+  margin: 3px 10px !important;
+  padding: 0.65em 1em !important;
+  font-family: "Rajdhani", sans-serif !important;
+  font-weight: 550 !important;
+  color: rgba(var(--af-text), 0.78) !important;
+  transition:
+    background 0.2s var(--af-ease),
+    color 0.2s var(--af-ease) !important;
+}
+
+[dir="ltr"] .navMenuOption {
+  padding: 0.65em 1em !important;
+}
+
+.navMenuOptionIcon,
+.listItemIcon:not(.listItemIcon-transparent) {
+  background: rgba(var(--af-accent), 0.12) !important;
+  color: rgba(var(--af-text), 0.7) !important;
+  border-radius: var(--af-radius-pill) !important;
+  padding: 8px !important;
+}
+
+.navMenuOption-selected {
+  background: rgb(var(--af-accent)) !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(var(--af-accent), 0.3);
+}
+
+.navMenuOption-selected .material-icons,
+.navMenuOption-selected .navMenuOptionIcon {
+  color: #fff !important;
+  background: rgba(0, 0, 0, 0.18) !important;
+}
+
+.navMenuOption:hover:not(.navMenuOption-selected) {
+  background: rgba(var(--af-accent), 0.12) !important;
+  color: rgb(var(--af-accent-soft)) !important;
+}
+
+.navMenuOption:hover:not(.navMenuOption-selected) .material-icons {
+  color: rgb(var(--af-accent-soft)) !important;
+}
+
+.scrollContainer {
+  padding: 28px 12px 0;
+}
+
+.appfooter {
+  background: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(var(--af-blur-md));
+  margin: 16px;
+  border-radius: 20px;
+  border: 1px solid var(--af-border-subtle);
+}
+
+.dashboardFooter::after,
+#myPreferencesMenuPage > div:after {
+  content: var(--af-footer-text);
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.75em;
+  color: rgba(var(--af-accent), 0.55);
+  letter-spacing: 0.12em;
+  margin-top: 0.4em;
+}
+
+/* ============================================================
+   7. CARDS
+   ============================================================ */
+.cardContent,
+.cardImageContainer,
+.cardImage,
+.visualCardBox,
+.cardPadder {
+  border-radius: var(--af-radius) !important;
+}
+
+.cardScalable {
+  border-radius: var(--af-radius) !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(var(--af-accent), 0.14) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.2s var(--af-ease),
+    border-color 0.2s var(--af-ease),
+    box-shadow 0.25s var(--af-ease);
+}
+
+.cardBox:not(.visualCardBox) .cardPadder {
+  background: linear-gradient(180deg, #141414, #0a0a0a) !important;
+  box-shadow: none !important;
+}
+
+.cardImageContainer {
+  transition: transform 0.4s var(--af-ease);
+}
+
+.cardOverlayContainer {
+  border-radius: var(--af-radius) !important;
+  background: transparent !important;
+  overflow: hidden;
+  transition:
+    background 0.3s var(--af-ease),
+    border-color 0.2s var(--af-ease) !important;
+  border: 1px solid transparent !important;
+}
+
+.cardOverlayContainer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(-110%);
+  background: var(--af-hover-shimmer-v);
+  transition:
+    transform 0.75s var(--af-ease),
+    opacity 0.5s ease;
+}
+
+.card-hoverable:hover .cardOverlayContainer {
+  background: rgba(var(--af-accent), 0.08) !important;
+  border-color: rgba(var(--af-accent), 0.45) !important;
+}
+
+.card-hoverable:hover .cardOverlayContainer::after {
+  opacity: 1;
+  transform: translateY(110%);
+}
+
+.backdropCard.card-hoverable .cardOverlayContainer::after,
+.overflowBackdropCard.card-hoverable .cardOverlayContainer::after {
+  transform: translateX(-110%);
+  background: var(--af-hover-shimmer-h);
+}
+
+.backdropCard.card-hoverable:hover .cardOverlayContainer::after,
+.overflowBackdropCard.card-hoverable:hover .cardOverlayContainer::after {
+  transform: translateX(110%);
+  opacity: 1;
+}
+
+.card-hoverable:hover .cardScalable,
+.card-hoverable:hover .visualCardBox {
+  border-color: rgba(var(--af-accent), 0.55) !important;
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(var(--af-accent), 0.2);
+}
+
+.card-hoverable:hover .cardImageContainer {
+  transform: scale(1.04);
+}
+
+.card.show-animation:focus > .cardBox {
+  transform: scale(1.06);
+  transition: transform 0.3s var(--af-ease) !important;
+}
+
+.cardOverlayContainer > .cardOverlayFab-primary,
+.listItemImageButton {
+  background: rgb(var(--af-accent)) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 100, 100, 0.5) !important;
+  box-shadow: 0 0 16px rgba(var(--af-accent), 0.4) !important;
+  transition:
+    background 0.15s ease,
+    transform 0.12s ease,
+    box-shadow 0.15s ease !important;
+  z-index: 2;
+}
+
+.cardOverlayContainer > .cardOverlayFab-primary:hover,
+.listItemImageButton:hover {
+  background: rgb(var(--af-accent-bright)) !important;
+  box-shadow: 0 0 22px rgba(var(--af-accent), 0.55) !important;
+}
+
+.cardOverlayContainer > .cardOverlayFab-primary:active,
+.listItemImageButton:active {
+  transform: scale(0.94) !important;
+}
+
+.cardBox-bottompadded {
+  margin-bottom: 0.55em !important;
+}
+
+.countIndicator,
+.fullSyncIndicator,
+.mediaSourceIndicator {
+  background: rgba(var(--af-accent), 0.7) !important;
+  border: 1px solid var(--af-border-strong) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(var(--af-blur-sm));
+  font-weight: 700;
+}
+
+.playedIndicator {
+  background: rgba(var(--af-played), 0.92) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+.innerCardFooter,
+.chapterThumbTextContainer {
+  background: var(--af-card-footer) !important;
+  box-shadow: none !important;
+}
+
+/* Progress — cards + detail (Abyss polish) */
+.itemProgressBar {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: var(--af-radius-pill);
+  height: 5px;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+}
+
+.itemProgressBarForeground {
+  background: rgb(var(--af-accent)) !important;
+  border-radius: var(--af-radius-pill);
+}
+
+#indexPage .itemProgressBar,
+.libraryPage .itemProgressBar,
+#itemDetailPage .itemProgressBar {
+  height: 6px;
+  margin: 0.45em 0.7em;
+  background: rgba(0, 0, 0, 0.4) !important;
+}
+
+#indexPage .innerCardFooterClear,
+.libraryPage .innerCardFooterClear,
+#itemDetailPage .innerCardFooterClear {
+  background: transparent !important;
+  box-shadow: none;
+}
+
+.card.overflowBackdropCard.card-hoverable,
+.card.overflowPortraitCard.card-hoverable {
+  animation: af-card-in 0.45s var(--af-ease) both;
+}
+
+.card.overflowBackdropCard.card-hoverable:nth-child(1),
+.card.overflowPortraitCard.card-hoverable:nth-child(1) {
+  animation-delay: 0.04s;
+}
+.card.overflowBackdropCard.card-hoverable:nth-child(2),
+.card.overflowPortraitCard.card-hoverable:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.card.overflowBackdropCard.card-hoverable:nth-child(3),
+.card.overflowPortraitCard.card-hoverable:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.card.overflowBackdropCard.card-hoverable:nth-child(4),
+.card.overflowPortraitCard.card-hoverable:nth-child(4) {
+  animation-delay: 0.16s;
+}
+.card.overflowBackdropCard.card-hoverable:nth-child(5),
+.card.overflowPortraitCard.card-hoverable:nth-child(5) {
+  animation-delay: 0.2s;
+}
+.card.overflowBackdropCard.card-hoverable:nth-child(n + 6),
+.card.overflowPortraitCard.card-hoverable:nth-child(n + 6) {
+  animation-delay: 0.24s;
+}
+
+@keyframes af-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.homeSectionsContainer
+  .verticalSection:has([data-type="CollectionFolder"])
+  .cardText {
+  display: none !important;
+}
+
+.homeSectionsContainer {
+  padding: 0 6px !important;
+}
+
+@supports (aspect-ratio: 1 / 1) {
+  #castCollapsible .cardScalable,
+  #guestCastContent .cardScalable {
+    aspect-ratio: 1 / 1;
+    border-radius: 50% !important;
+  }
+}
+
+#castCollapsible,
+#scenesCollapsible,
+#similarCollapsible,
+.moreFromSeasonSection {
+  overflow: hidden;
+}
+
+/* ============================================================
+   8. BUTTONS
+   ============================================================ */
+.raised,
+.fab,
+a[data-role="button"],
+.emby-button.block {
+  background: rgba(28, 8, 8, 0.88) !important;
+  color: #fff !important;
+  border: 1px solid var(--af-border) !important;
+  border-radius: var(--af-radius-sm) !important;
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 600;
+  transition:
+    background 0.25s var(--af-ease),
+    border-color 0.25s var(--af-ease),
+    box-shadow 0.25s var(--af-ease),
+    color 0.25s var(--af-ease) !important;
+}
+
+.raised:hover,
+.fab:hover,
+.emby-button.block:hover {
+  background: rgba(var(--af-accent), 0.9) !important;
+  border-color: rgba(var(--af-accent-bright), 0.7) !important;
+  color: #fff !important;
+}
+
+.button-submit,
+.btnPlay.detailButton {
+  background: rgb(var(--af-accent)) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 80, 80, 0.55) !important;
+  box-shadow: 0 0 22px rgba(var(--af-accent), 0.32);
+  font-weight: 700 !important;
+}
+
+.button-submit:hover,
+.btnPlay.detailButton:hover {
+  background: rgb(var(--af-accent-bright)) !important;
+}
+
+.button-delete,
+.btnDelete,
+#btnDeleteImage,
+.btnRevoke,
+#btnShutdown {
+  background: rgb(140, 20, 20) !important;
+  border: 1px solid rgb(220, 80, 80) !important;
+}
+
+.paper-icon-button-light {
+  border-radius: var(--af-radius-sm);
+}
+
+.button-flat:hover,
+.button-link {
+  color: rgb(var(--af-accent-soft)) !important;
+}
+
+.button-link:hover {
+  text-decoration: none;
+}
+
+.playstatebutton-icon-played {
+  color: rgb(var(--af-played)) !important;
+}
+
+.ratingbutton-icon-withrating {
+  color: rgb(var(--af-favorite)) !important;
+}
+
+@keyframes af-heart-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.28);
+  }
+  70% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.ratingbutton-withrating .material-icons.favorite {
+  animation: af-heart-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.detailButton {
+  border-radius: var(--af-radius) !important;
+}
+
+.detailButton:not(.btnPlay) {
+  background: transparent !important;
+  border-color: transparent !important;
+  border-radius: 50% !important;
+}
+
+.detailButton:not(.btnPlay):hover {
+  background: rgba(var(--af-accent), 0.14) !important;
+  color: rgb(var(--af-accent-soft)) !important;
+}
+
+.btnPlay.detailButton {
+  border-radius: var(--af-radius-pill) !important;
+  min-width: 9.5em;
+  height: 2.9em;
+  flex-direction: row;
+}
+
+.raised.homeLibraryButton {
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid var(--af-border) !important;
+}
+
+.raised.homeLibraryButton:hover {
+  background: rgba(var(--af-accent), 0.2) !important;
+  border-color: var(--af-border-strong) !important;
+}
+
+.emby-scrollbuttons {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--af-radius-pill);
+  border: 1px solid var(--af-border-subtle);
+  padding: 2px 4px !important;
+}
+
+/* ============================================================
+   9. DIALOGS / TOASTS
+   ============================================================ */
+.dialog,
+.toast,
+.upNextContainer,
+.playerStats,
+.playerStats-stats,
+.iconOsd {
+  border-radius: var(--af-radius-lg) !important;
+  background: rgba(var(--af-glass), 0.92) !important;
+  border: 1px solid var(--af-border) !important;
+  backdrop-filter: blur(var(--af-blur-lg)) !important;
+  -webkit-backdrop-filter: blur(var(--af-blur-lg)) !important;
+  box-shadow: var(--af-shadow);
+  color: rgb(var(--af-text));
+}
+
+.dialog.dialog-fullscreen,
+.dialog.dialog-fullscreen-lowres {
+  border-radius: 0 !important;
+}
+
+.actionSheetContent {
+  padding: 0.65em 0.55em !important;
+}
+
+.actionSheetMenuItem {
+  border-radius: var(--af-radius) !important;
+}
+
+.actionSheetMenuItem:hover {
+  background: rgba(var(--af-accent), 0.14) !important;
+  color: #fff !important;
+}
+
+.actionSheetMenuItem:has(.listItemIcon.check) {
+  background: rgb(var(--af-accent)) !important;
+  color: #fff !important;
+}
+
+.toast.toastVisible {
+  animation: af-toast-up 0.55s var(--af-ease) both;
+}
+
+@keyframes af-toast-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.formDialogHeader,
+.formDialogFooter {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(var(--af-blur-md));
+}
+
+.formDialogHeader {
+  border-radius: var(--af-radius-lg) var(--af-radius-lg) 0 0;
+}
+
+.formDialogFooter {
+  border-radius: 0 0 var(--af-radius-lg) var(--af-radius-lg);
+}
+
+.upNextContainer .btnStartNow {
+  background: rgb(var(--af-accent)) !important;
+  border-color: rgba(255, 80, 80, 0.5) !important;
+  border-radius: var(--af-radius-pill);
+}
+
+.selectionCommandsPanel {
+  background: rgba(0, 0, 0, 0.78) !important;
+  backdrop-filter: blur(var(--af-blur-lg));
+  border-bottom: 1px solid var(--af-border);
+  color: #fff;
+}
+
+/* ============================================================
+   10. LISTS
+   ============================================================ */
+.listItem {
+  border-radius: var(--af-radius) !important;
+  margin-bottom: 3px !important;
+  transition:
+    background 0.22s var(--af-ease),
+    color 0.22s var(--af-ease) !important;
+}
+
+[dir="ltr"] .listItem:not(.actionSheetMenuItem) {
+  padding: 0.4em 0.9em !important;
+}
+
+.listItem-border {
+  border-color: transparent !important;
+}
+
+.listItem:hover {
+  background: rgba(var(--af-accent), 0.1) !important;
+}
+
+.listItem:hover,
+.listItem:hover .listItemBodyText,
+.listItem:hover .secondary,
+.listItem:hover .material-icons {
+  color: rgb(var(--af-accent-soft)) !important;
+}
+
+.listItemBodyText:not(.secondary) {
+  font-weight: 600;
+  color: rgb(var(--af-text));
+}
+
+.listItemBodyText.secondary {
+  color: rgb(var(--af-text-dim));
+}
+
+.listItemImage {
+  border-radius: var(--af-radius) !important;
+  border: 1px solid var(--af-border-subtle);
+}
+
+.paperList,
+.visualCardBox {
+  background: rgba(var(--af-surface), 0.75) !important;
+  border: 1px solid var(--af-border) !important;
+  border-radius: var(--af-radius-lg) !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+/* ============================================================
+   11. FORMS + MULTISELECT
+   ============================================================ */
+.emby-input,
+.emby-textarea,
+.emby-select,
+.emby-select-withcolor {
+  background: rgba(28, 6, 6, 0.6) !important;
+  border: 1px solid var(--af-border) !important;
+  border-radius: var(--af-radius-sm) !important;
+  color: rgb(var(--af-text)) !important;
+  padding: 0.5em 0.7em !important;
+}
+
+.emby-textarea {
+  font-family: "Share Tech Mono", ui-monospace, monospace;
+}
+
+.emby-input:focus,
+.emby-textarea:focus,
+.emby-select:focus,
+.emby-select-withcolor:focus {
+  border-color: rgba(var(--af-accent), 0.8) !important;
+  outline: 1px solid rgba(var(--af-accent), 0.35) !important;
+}
+
+.inputLabelFocused,
+.selectLabelFocused,
+.textareaLabelFocused {
+  color: #fff !important;
+}
+
+.checkboxOutline {
+  border-color: rgba(var(--af-accent), 0.4) !important;
+  border-radius: 6px !important;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.emby-checkbox:checked + span + .checkboxOutline:not(.multiSelectCheckboxOutline) {
+  background: rgb(var(--af-accent)) !important;
+  border-color: rgb(var(--af-accent)) !important;
+}
+
+/* Selection mode — full card outline */
+.checkboxOutline.multiSelectCheckboxOutline {
+  border-radius: var(--af-radius) !important;
+  border-width: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.emby-checkbox:checked + span + .checkboxOutline.multiSelectCheckboxOutline {
+  background: transparent !important;
+  border: 2px solid rgb(var(--af-accent)) !important;
+  box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.35);
+}
+
+.checkboxIcon {
+  color: #fff !important;
+  animation: af-check 0.2s var(--af-ease);
+}
+
+@keyframes af-check {
+  from {
+    transform: scale(0.7);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.mdl-switch__input:checked
+  + .mdl-switch__label
+  + .mdl-switch__trackContainer
+  > .mdl-switch__track {
+  background: rgba(var(--af-accent), 0.5);
+}
+
+.mdl-switch__input:checked
+  + .mdl-switch__label
+  + .mdl-switch__trackContainer
+  > .mdl-switch__thumb {
+  background: rgb(var(--af-accent));
+}
+
+fieldset {
+  border: 1px solid var(--af-border-subtle);
+  border-radius: var(--af-radius-sm);
+}
+
+/* ============================================================
+   12. SLIDERS / PROGRESS / SPINNER
+   ============================================================ */
+.mdl-slider-background-lower,
+.playbackProgress > div,
+.iconOsdProgressInner,
+::-webkit-progress-value,
+::-moz-progress-bar {
+  background-color: rgb(var(--af-accent)) !important;
+}
+
+.mdl-slider-background-flex,
+.mdl-slider-background-upper,
+.backgroundProgress > div {
+  background: rgba(var(--af-accent), 0.18) !important;
+}
+
+.mdl-slider::-webkit-slider-thumb,
+.mdl-slider::-moz-range-thumb,
+.mdl-slider::-ms-thumb {
+  background: #fff !important;
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(var(--af-accent), 0.55);
+}
+
+.sliderMarker.watched,
+#videoOsdPage .sliderMarker.watched {
+  background: rgb(var(--af-accent)) !important;
+}
+
+#videoOsdPage .sliderMarker.unwatched {
+  background: hsl(0 0% 30%) !important;
+}
+
+.mdl-spinner__layer-1,
+.mdl-spinner__circle {
+  border-color: rgb(var(--af-accent)) !important;
+}
+
+.progressring-spiner {
+  border-color: rgb(var(--af-accent));
+}
+
+.progressring-bg {
+  display: none;
+}
+
+progress {
+  border-radius: var(--af-radius-sm);
+  background: rgba(0, 0, 0, 0.55) !important;
+  border: 1px solid var(--af-border);
+  overflow: hidden;
+}
+
+.taskProgressInner {
+  background: rgb(var(--af-accent)) !important;
+  border-radius: var(--af-radius-sm) !important;
+}
+
+.taskProgressOuter {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid var(--af-border);
+  border-radius: var(--af-radius-sm) !important;
+}
+
+/* ============================================================
+   13. DETAIL PAGE
+   ============================================================ */
+.itemBackdrop {
+  display: block !important;
+}
+
+.layout-desktop .itemBackdrop {
+  height: 56vh !important;
+}
+
+.layout-mobile .itemBackdrop {
+  height: 42vh;
+  margin-top: 0;
+  -webkit-mask: linear-gradient(180deg, #000 55%, transparent);
+  mask: linear-gradient(180deg, #000 55%, transparent);
+}
+
+.itemBackdrop::after {
+  background: linear-gradient(
+    180deg,
+    transparent 18%,
+    rgba(0, 0, 0, 0.55) 58%,
+    #000 100%
+  ) !important;
+}
+
+.layout-desktop .detailRibbon {
+  background: transparent !important;
+  margin-top: 0;
+}
+
+.layout-desktop .detailPageWrapperContainer {
+  background: linear-gradient(
+    180deg,
+    transparent 8vh,
+    rgba(0, 0, 0, 0.78) 32vh,
+    #000 55vh
+  );
+  min-height: 42vh;
+}
+
+.detailLogo {
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.75));
+}
+
+#itemDetailPage .detailLogo {
+  display: block;
+  position: static;
+  margin-left: 32%;
+  margin-top: -14vh;
+  margin-bottom: 1.5vh;
+  background-position: 0 50%;
+  flex-shrink: 0;
+}
+
+.layout-mobile .detailLogo {
+  display: none !important;
+}
+
+.detailImageContainer .card,
+.detailImageContainer .cardImageContainer {
+  border-radius: 20px !important;
+  border: 1px solid var(--af-border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+.layout-desktop .detailImageContainer .card {
+  position: relative !important;
+  top: auto !important;
+}
+
+.nameContainer > h1.itemName,
+.nameContainer > h1.parentName {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 650;
+  font-size: clamp(1.8rem, 4vw, 3.4rem);
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.mediaInfoOfficialRating {
+  background: transparent !important;
+  border: 1px solid var(--af-border);
+  border-radius: 6px;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 0 0.45em;
+}
+
+.itemDetailsGroup {
+  background: rgba(var(--af-glass), 0.58) !important;
+  border: 1px solid var(--af-border) !important;
+  border-radius: var(--af-radius-lg) !important;
+  box-shadow: var(--af-inset-glass);
+  padding: 0.25em 0;
+  overflow: hidden;
+}
+
+.detailsGroupItem {
+  padding: 0.55em 1em !important;
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(var(--af-accent), 0.1);
+}
+
+.detailsGroupItem:last-child {
+  border-bottom: none;
+}
+
+.detailsGroupItem > .label {
+  font-weight: 700;
+  color: #fff;
+}
+
+.detailsGroupItem > .content {
+  color: rgb(var(--af-text-dim));
+  text-align: end;
+}
+
+.mainDetailButtons {
+  justify-content: center;
+  gap: 0.25em;
+}
+
+.detail-clamp-text {
+  color: rgb(var(--af-text-dim));
+}
+
+.itemExternalLinks.focuscontainer-x > .button-link {
+  background: rgba(28, 6, 6, 0.7);
+  border: 1px solid var(--af-border);
+  border-radius: 6px;
+  padding: 0.15em 0.55em;
+  color: #fff;
+}
+
+.itemExternalLinks.focuscontainer-x > a:hover,
+.itemExternalLinks.focuscontainer-x > a:active {
+  background: rgb(var(--af-accent)) !important;
+  color: #fff !important;
+}
+
+/* ============================================================
+   14. OSD / PLAYER
+   ============================================================ */
+.videoOsdBottom {
+  background: none !important;
+  padding: 0 !important;
+  margin: 18px 20px !important;
+}
+
+.videoOsdBottom .osdControls,
+.nowPlayingBar {
+  border-radius: 20px !important;
+  background: rgba(var(--af-glass), 0.86) !important;
+  border: 1px solid var(--af-border) !important;
+  backdrop-filter: blur(var(--af-blur-lg)) !important;
+  -webkit-backdrop-filter: blur(var(--af-blur-lg)) !important;
+  box-shadow: var(--af-shadow), var(--af-inset-glass);
+  padding: 10px 14px !important;
+}
+
+.videoOsdBottom.videoOsdBottom-maincontrols {
+  background: var(--af-osd-bottom) !important;
+}
+
+.skinHeader-withBackground.osdHeader {
+  background: var(--af-osd-top) !important;
+}
+
+.startTimeText,
+.endTimeText,
+.positionTime,
+.runtime,
+.nowPlayingBarCurrentTime {
+  font-family: "Share Tech Mono", monospace;
+  opacity: 0.8;
+}
+
+.osdPoster img,
+.nowPlayingPageImage,
+.nowPlayingBar .nowPlayingImage {
+  border-radius: var(--af-radius-sm) !important;
+  border: none;
+}
+
+.chapterThumbContainer,
+.chapterThumbWrapper,
+.chapterThumb {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.sliderBubble {
+  background: rgba(18, 4, 4, 0.8) !important;
+  border: 1px solid var(--af-border);
+  border-radius: 14px !important;
+  backdrop-filter: blur(var(--af-blur-md));
+  color: #fff;
+  overflow: hidden;
+}
+
+.upNextDialog-countdownText {
+  color: rgb(var(--af-accent-soft));
+}
+
+.skip-button,
+#introSkipperButton,
+.introSkipperButton {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: 1px solid rgb(var(--af-accent)) !important;
+  border-radius: var(--af-radius-sm) !important;
+  color: #fff !important;
+  font-family: "Rajdhani", sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 0 14px rgba(var(--af-accent), 0.4);
+}
+
+.skip-button:hover,
+#introSkipperButton:hover {
+  background: rgb(var(--af-accent)) !important;
+}
+
+.nowPlayingBar,
+#mediaBar,
+.mediaBar {
+  border-top: 1px solid var(--af-border) !important;
+}
+
+.nowPlayingBar-button:hover,
+.mediaBarButton:hover {
+  color: rgb(var(--af-accent-soft)) !important;
+}
+
+/* ============================================================
+   15. SEARCH
+   ============================================================ */
+#searchTextInput {
+  background: rgba(20, 4, 4, 0.6) !important;
+  border: 1px solid var(--af-border) !important;
+  border-radius: var(--af-radius-pill) !important;
+  font-weight: 650;
+  font-size: 1.25rem;
+  padding: 12px 20px !important;
+  letter-spacing: 0.03em;
+}
+
+.searchfields-txtSearch {
+  border-radius: var(--af-radius-pill) !important;
+}
+
+.searchfields-icon {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.searchSuggestionsList {
+  background: rgba(var(--af-glass), 0.92) !important;
+  border: 1px solid var(--af-border);
+  border-radius: var(--af-radius-lg);
+  backdrop-filter: blur(var(--af-blur-md));
+  padding: 8px 0;
+  scrollbar-width: thin;
+}
+
+.searchSuggestionsList .emby-button {
+  color: rgba(var(--af-text), 0.75);
+  font-weight: 500;
+  font-size: 1.05rem;
+}
+
+.searchSuggestionsList div:hover {
+  background: rgba(var(--af-accent), 0.12);
+}
+
+.searchSuggestionsList > div > a::before {
+  content: "search";
+  font-family: var(--af-icons);
+  margin-right: 8px;
+  opacity: 0.55;
+  vertical-align: middle;
+}
+
+/* ============================================================
+   16. LOGIN
+   ============================================================ */
+#loginPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  
+  background-size: cover !important;
+}
+
+#loginPage .padded-left.padded-right.padded-bottom-page {
+  width: min(28em, 92vw);
+ 
+  border: 1px solid var(--af-border) !important;
+  border-radius: 22px !important;
+  backdrop-filter: blur(var(--af-blur-lg));
+  box-shadow:
+    0 0 50px rgba(var(--af-accent), 0.14),
+    var(--af-shadow);
+  padding: 2em 1.75em 1.25em !important;
+  margin-top: 0 !important;
+}
+
+.manualLoginForm::before,
+.visualLoginForm::before {
+  content: "Sign in to continue";
+  display: block;
+  text-align: center;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin: -0.25em 0 1.1em;
+}
+
+.manualLoginForm .sectionTitle,
+.visualLoginForm > h1,
+#loginPage h1 {
+  display: none;
+}
+
+#loginPage .button-submit {
+  width: 100%;
+  border-radius: var(--af-radius-pill) !important;
+}
+
+#loginPage .btnForgotPassword,
+#loginPage .raised.cancel.block.btnForgotPassword {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: rgba(var(--af-text), 0.65) !important;
+}
+
+#loginPage .btnForgotPassword:hover {
+  color: rgb(var(--af-accent-soft)) !important;
+}
+
+/* ============================================================
+   17. DASHBOARD / MUI
+   ============================================================ */
+.MuiAppBar-root {
+  background: rgba(0, 0, 0, 0.78) !important;
+  backdrop-filter: blur(var(--af-blur-md));
+  border-bottom: 1px solid var(--af-border);
+}
+
+.MuiDrawer-paper {
+  background: rgba(var(--af-glass), 0.94) !important;
+  backdrop-filter: blur(var(--af-blur-lg));
+  border-right: 1px solid var(--af-border);
+}
+
+.Mui-selected {
+  background-color: rgba(var(--af-accent), 0.88) !important;
+  color: #fff !important;
+}
+
+#dashboardPage .playbackProgress > div {
+  background-color: rgba(var(--af-accent), 0.9) !important;
+}
+
+#dashboardPage .transcodingProgress > div {
+  background-color: rgba(var(--af-accent), 0.4) !important;
+}
+
+.metadataSidebarIcon {
+  color: #a01818 !important;
+}
+
+table:not(.MuiTable-root) {
+  border: 1px solid var(--af-border);
+  border-radius: var(--af-radius-sm);
+  background: #0a0404;
+  overflow: hidden;
+}
+
+.detailTableBodyRow-shaded:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.55) !important;
+}
+
+.settingsPage,
+.adminPage,
+.userSettingsPage,
+#myPreferencesMenuPage {
+  font-size: 1.05rem;
+}
+
+.selectContainer:has(#selectTheme option[value="dark"]:checked) #selectTheme,
+.selectContainer:has(#selectDashboardTheme option[value="dark"]:checked)
+  #selectDashboardTheme {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+/* ============================================================
+   18. GUIDE / ALPHA / LYRICS / PLUGINS
+   ============================================================ */
+.alphaPickerButton {
+  font-family: "Share Tech Mono", monospace;
+  color: rgba(255, 255, 255, 0.28);
+  border-radius: var(--af-radius-pill);
+}
+
+.alphaPickerButton-selected {
+  color: #fff;
+  background: rgba(var(--af-accent), 0.28);
+  box-shadow: inset 0 0 0 1px var(--af-border);
+}
+
+.alphaPickerRow-vertical {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--af-radius-pill);
+  padding: 8px 0;
+  border: 1px solid var(--af-border-subtle);
+}
+
+.guideProgramName,
+.guide-channelHeaderCell {
+  background: rgba(var(--af-accent), 0.08) !important;
+  border-radius: 8px;
+}
+
+.programCell-active .guideProgramName {
+  background: rgba(var(--af-accent), 0.2) !important;
+}
+
+.guide-channelHeaderCell:focus,
+.programCell:focus > .guideProgramName {
+  background: rgba(var(--af-accent), 0.55) !important;
+  color: #fff !important;
+}
+
+.infoBanner {
+  background: #0a0a0a !important;
+  border: 1px solid var(--af-border) !important;
+  border-radius: var(--af-radius-lg) !important;
+}
+
+.lyricsLine {
+  font-size: 1.85em;
+  font-weight: 650;
+  text-align: center;
+}
+.pastLyric {
+  opacity: 0.4;
+  transform: scale(0.9);
+}
+.futureLyric {
+  opacity: 0.65;
+  transform: scale(0.92);
+}
+
+.syncPlayIconCircle {
+  color: rgb(var(--af-accent)) !important;
+  text-shadow: none !important;
+}
+
+#je-osd-rating-container .je-chip.tmdb,
+.jf-rating-fresh,
+.jf-rating-community,
+.mdblistRatings,
+[class*="mdblist"] {
+  background: rgba(var(--af-accent), 0.18) !important;
+  border: 1px solid var(--af-border) !important;
+  border-radius: var(--af-radius-pill) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+#jellyfin-enhanced-panel {
+  background: rgba(0, 0, 0, 0.55) !important;
+}
+
+#jellyfin-enhanced-panel .tab-button.active {
+  color: #fff !important;
+  border-bottom-color: rgb(var(--af-accent)) !important;
+}
+
+/* ============================================================
+   19. MOTION
+   ============================================================ */
+@keyframes af-section-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.verticalSection:nth-child(1) {
+  animation: af-section-up 0.6s var(--af-ease) both 0.04s;
+}
+.verticalSection:nth-child(2) {
+  animation: af-section-up 0.6s var(--af-ease) both 0.08s;
+}
+.verticalSection:nth-child(3) {
+  animation: af-section-up 0.6s var(--af-ease) both 0.12s;
+}
+.verticalSection:nth-child(4) {
+  animation: af-section-up 0.6s var(--af-ease) both 0.16s;
+}
+.verticalSection:nth-child(5) {
+  animation: af-section-up 0.6s var(--af-ease) both 0.2s;
+}
+.verticalSection:nth-child(n + 6) {
+  animation: af-section-up 0.6s var(--af-ease) both 0.24s;
+}
+
+.paper-icon-button-light,
+.emby-tab-button,
+.navMenuOption,
+.listItem,
+.actionSheetMenuItem,
+.cardOverlayContainer,
+.raised,
+.fab {
+  transition:
+    background 0.28s var(--af-ease),
+    color 0.28s var(--af-ease),
+    border-color 0.28s var(--af-ease),
+    box-shadow 0.28s var(--af-ease),
+    transform 0.28s var(--af-ease) !important;
+}
+
+.mainDrawer {
+  transition:
+    transform 0.18s var(--af-ease-snappy),
+    left 0.18s var(--af-ease-snappy),
+    width 0.18s var(--af-ease-snappy) !important;
+}
+
+/* a11y */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   20. ROUNDED BATCH
+   ============================================================ */
+.cardContent,
+.cardImageContainer,
+.listItemImage,
+.listItemImageButton,
+.itemDetailImage,
+.fab,
+.raised,
+.emby-input,
+.emby-textarea,
+.primaryImageWrapper > img,
+.blurhash-canvas,
+.nowPlayingPageImage,
+.osdPoster img,
+.chapterThumb,
+.innerCardFooter,
+.toast,
+.paperList {
+  border-radius: var(--af-radius) !important;
+}
+
+/* ============================================================
+   21. RESPONSIVE / HOVER / TV
+   ============================================================ */
+.layout-mobile .mainDrawer,
+.layout-mobile .editPageSidebar {
+  border-radius: 0 24px 24px 0 !important;
+  margin: 0 !important;
+}
+
+.layout-mobile .detailPagePrimaryContainer {
+  background: transparent;
+}
+
+.layout-mobile .sectionTitle {
+  font-size: 0.8rem !important;
+}
+
+.layout-mobile .headerButton,
+.layout-mobile .headerUserButton,
+.layout-mobile .headerCastButton,
+.layout-mobile .headerSyncButton {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+}
+
+@media (max-width: 50em) {
+  .homeLibraryButton {
+    min-width: 44%;
+    width: auto !important;
+  }
+
+  .pageTitle {
+    font-size: 0.95rem !important;
+  }
+
+  .nameContainer > h1.itemName,
+  .nameContainer > h1.parentName {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 26em) {
+  .headerLeft,
+  .headerRight {
+    padding: 0 10px;
+  }
+
+  .emby-tab-button {
+    padding: 0.35em 0.9em !important;
+  }
+
+  .btnPlay.detailButton {
+    min-width: 100%;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .paper-icon-button-light:hover:not(:disabled) {
+    background: rgba(var(--af-accent), 0.14) !important;
+    color: #fff !important;
+  }
+
+  .card-hoverable:hover .cardOverlayContainer {
+    backdrop-filter: brightness(0.78);
+  }
+}
+
+@media all and (min-width: 100em) {
+  #castContent .card.overflowPortraitCard,
+  #guestCastContent .card.overflowPortraitCard {
+    width: 7.2vw !important;
+  }
+  #castContent .cardScalable,
+  #guestCastContent .cardScalable {
+    width: calc(7.2vw - 0.6em) !important;
+    height: calc(7.2vw - 0.6em) !important;
+  }
+}
+
+@media all and (max-width: 50em) {
+  #castContent .card.overflowPortraitCard,
+  #guestCastContent .card.overflowPortraitCard {
+    width: 22vw !important;
+  }
+  #castContent .cardScalable,
+  #guestCastContent .cardScalable {
+    width: calc(22vw - 0.6em) !important;
+    height: calc(22vw - 0.6em) !important;
+  }
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  .dialog,
+  .toast,
+  .upNextContainer,
+  .mainDrawer,
+  .emby-tabs-slider,
+  .videoOsdBottom .osdControls,
+  .nowPlayingBar,
+  .iconOsd,
+  .playerStats-stats,
+  .appfooter,
+  .selectionCommandsPanel {
+    backdrop-filter: blur(var(--af-blur-lg)) saturate(140%) !important;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .dialog,
+  .toast,
+  .mainDrawer,
+  .emby-tabs-slider,
+  .videoOsdBottom .osdControls,
+  .nowPlayingBar {
+    background: #121212 !important;
+  }
+}
+
+/* TV */
+.layout-tv .show-focus:focus,
+.layout-tv .show-animation:focus {
+  transform: none !important;
+  outline: 3px solid rgb(var(--af-accent)) !important;
+  outline-offset: 3px;
+}
+
+.layout-tv .backdropImage {
+  animation: none !important;
+  filter: brightness(0.32) saturate(1.1) !important;
+}
+
+.layout-tv .verticalSection,
+.layout-tv .card.overflowBackdropCard.card-hoverable,
+.layout-tv .card.overflowPortraitCard.card-hoverable {
+  animation: none !important;
+}
+
+.layout-tv .card-hoverable:hover .cardScalable {
+  transform: none;
+}
+
+/* ============================================================
+   22. LIBRARY PADDING
+   ============================================================ */
+.libraryPage {
+  padding-top: 6.5em !important;
+}
+
+.libraryPage:not(.noSecondaryNavPage) {
+  padding-top: calc(var(--af-header-h) + 2.4em) !important;
+}
+
+[dir="ltr"] .padded-right {
+  padding-right: max(env(safe-area-inset-right), var(--af-side-pad));
+}
+
+[dir="ltr"] .detailPageContent,
+.content-primary {
+  padding-left: var(--af-side-pad) !important;
+  padding-right: var(--af-side-pad) !important;
+}
+
+.itemsContainer > .card > .cardBox {
+  margin-left: 0.5em !important;
+  margin-right: 0.65em;
+}
+
+#userProfilePage .readOnlyContent,
+.readOnlyContent .verticalSection,
+.settingsContainer .verticalSection,
+.homeScreenSettingsContainer .perLibrarySettings {
+  background: rgba(var(--af-glass), 0.68);
+  border: 1px solid var(--af-border);
+  border-radius: 22px;
+  box-shadow: var(--af-shadow);
+  padding: 14px;
+}
+
+/* ============================================================
+   END — Abyss Net v2
+   Tweaks:
+   • Classic Netflix: keep --af-accent-r/g/b: 229, 9, 20
+   • Netfin mute:     204, 0, 0
+   • Hide footer:     --af-footer-text: ""
+   • Use Display theme: Dark
+   ============================================================ */
+/* ============================================================
+   FIX — Full movie/show titles on item detail page
+   (stops "The Bi..." truncation)
+   ============================================================ */
+
+/* Always show the title even when a clear logo is present */
+#itemDetailPage .nameContainer,
+#itemDetailPage .nameContainer h1,
+#itemDetailPage .nameContainer .itemName,
+#itemDetailPage h1.itemName,
+#itemDetailPage h1.parentName,
+#itemDetailPage .itemName,
+#itemDetailPage .itemName.infoText,
+#itemDetailPage .itemName.infoText.parentNameLast {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #fff !important;
+}
+
+/* Kill ellipsis / clamp / single-line cut-off */
+#itemDetailPage .nameContainer h1,
+#itemDetailPage .nameContainer .itemName,
+#itemDetailPage h1.itemName,
+#itemDetailPage h1.parentName,
+#itemDetailPage .itemName,
+#itemDetailPage .nameContainer h1 bdi,
+#itemDetailPage .itemName bdi,
+#itemDetailPage .nameContainer h1 a,
+#itemDetailPage .itemName a {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
+  max-width: none !important;
+  width: 100% !important;
+  max-height: none !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* Name area must be allowed to use real width in flex layouts */
+#itemDetailPage .nameContainer,
+#itemDetailPage .infoWrapper,
+#itemDetailPage .detailRibbon .nameContainer,
+#itemDetailPage .detailPagePrimaryContent .nameContainer {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow: visible !important;
+  text-align: left !important;
+}
+
+/* Don’t let poster + buttons crush the title onto one squeezed line */
+#itemDetailPage .detailPagePrimaryContainer,
+#itemDetailPage .detailRibbon,
+#itemDetailPage .detailPagePrimaryContent {
+  flex-wrap: wrap !important;
+  overflow: visible !important;
+}
+
+#itemDetailPage .mainDetailButtons {
+  flex-shrink: 0 !important;
+}
+
+/* Readable size next to Play (was effectively vanishing) */
+#itemDetailPage .nameContainer > h1.itemName,
+#itemDetailPage .nameContainer > h1.parentName,
+#itemDetailPage h1.itemName {
+  font-family: "Rajdhani", "Segoe UI", sans-serif !important;
+  font-weight: 700 !important;
+  font-size: clamp(1.6rem, 3.2vw, 2.75rem) !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0.02em !important;
+  margin: 0.15em 0 0.25em !important;
+  padding: 0 !important;
+}
+
+/* Subtitle / series episode line under title */
+#itemDetailPage .subtitle,
+#itemDetailPage .nameContainer .subtitle {
+  display: block !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  opacity: 0.85;
+  font-size: clamp(1rem, 2vw, 1.35rem) !important;
+}
+
+/* Header breadcrumb title (if that was also clipping) */
+.skinHeader .pageTitle:not(:empty) {
+  max-width: min(46vw, 28rem) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mobile: stack title above buttons so nothing truncates */
+@media (max-width: 50em) {
+  #itemDetailPage .nameContainer > h1.itemName,
+  #itemDetailPage h1.itemName {
+    font-size: 1.65rem !important;
+  }
+
+  #itemDetailPage .detailPagePrimaryContainer,
+  #itemDetailPage .detailRibbon {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #itemDetailPage .mainDetailButtons {
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+}
+/* ============================================================
+   FIX — Header region cut off / clipped (Home + all pages)
+   ============================================================ */
+
+/* 1. Never clip header chrome */
+.skinHeader,
+.skinHeader-withBackground,
+.skinHeader.headroom,
+.headerTop,
+.headerTabs,
+.sectionTabs,
+.emby-tabs,
+.emby-tabs-slider {
+  overflow: visible !important;
+  max-height: none !important;
+  clip: auto !important;
+  clip-path: none !important;
+}
+
+/* 2. Kill headroom bury (common “header cut in half” cause) */
+.skinHeader.headroom--unpinned,
+.skinHeader.headroom--unpinned:not(.osdHeader),
+.headroom--unpinned:not(.osdHeader) {
+  transform: translateY(0) !important;
+  -webkit-transform: translateY(0) !important;
+}
+
+/* 3. Stable header height — no flex squash */
+.skinHeader {
+  min-height: 4.25rem !important;
+  height: auto !important;
+  z-index: 11 !important;
+}
+
+.headerTop {
+  min-height: 3.75rem !important;
+  height: auto !important;
+  padding: 0.55rem 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+/* 4. REMOVE dual-row negative margin (this is what cuts the header) */
+.headerTabs.sectionTabs,
+.sectionTabs,
+.withSectionTabs .headerTabs.sectionTabs {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  position: relative !important;
+  top: auto !important;
+  transform: none !important;
+  align-self: center !important;
+  max-width: min(96vw, 720px) !important;
+  width: auto !important;
+  height: auto !important;
+  z-index: 12 !important;
+}
+
+/* Desktop: keep tabs on their own clean row under icons (no -4.9em trick) */
+@media all and (min-width: 75em) {
+  .skinHeader {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .headerTop {
+    width: 100% !important;
+  }
+
+  .headerTabs.sectionTabs,
+  .sectionTabs {
+    margin: 0.15rem auto 0.55rem !important;
+    justify-content: center !important;
+  }
+
+  /* Page content starts BELOW full header (top bar + tabs) */
+  .libraryPage:not(.noSecondaryNavPage),
+  #indexPage,
+  #homePage,
+  .homePage,
+  .libraryPage {
+    padding-top: 7.5rem !important;
+  }
+}
+
+/* Mobile / tablet */
+@media all and (max-width: 74.99em) {
+  .headerTabs.sectionTabs,
+  .sectionTabs {
+    margin: 0.25rem auto 0.5rem !important;
+  }
+
+  .libraryPage:not(.noSecondaryNavPage),
+  #indexPage,
+  .libraryPage {
+    padding-top: 8.25rem !important;
+  }
+}
+
+/* 5. Tabs pill must not be height-clipped */
+.emby-tabs-slider {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  height: auto !important;
+  min-height: 2.4rem !important;
+  display: flex !important;
+  align-items: center !important;
+  width: max-content !important;
+  max-width: 96vw !important;
+}
+
+.emby-tab-button {
+  line-height: 1.2 !important;
+  height: auto !important;
+  min-height: 2.1rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* 6. Header background: fade only, don’t mask children */
+.skinHeader-withBackground:not(.semiTransparent):not(.osdHeader) {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.96) 0%,
+    rgba(0, 0, 0, 0.82) 55%,
+    rgba(0, 0, 0, 0.35) 100%
+  ) !important;
+  border-bottom: 1px solid rgba(var(--af-accent, 229, 9, 20), 0.35) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+}
+
+.skinHeader-withBackground::before,
+.skinHeader-withBackground::after {
+  pointer-events: none !important;
+  /* if a pseudo was acting as a mask, keep it from covering taps */
+}
+
+/* 7. Home empty “black void” under header — tighten only if needed */
+#indexPage .homeSectionsContainer,
+.homeSectionsContainer {
+  margin-top: 0.25rem !important;
+  padding-top: 0.25rem !important;
+}
+
+/* 8. Ensure menu / search / user never clipped */
+.headerLeft,
+.headerRight {
+  overflow: visible !important;
+  min-height: 2.75rem !important;
+  align-items: center !important;
+}
+
+.headerButton,
+.headerUserButton,
+.paper-icon-button-light.headerButton {
+  overflow: visible !important;
+}
+/* ============================================================
+   FIX — Mobile Title Cutoff (Force Line Breaks)
+   ============================================================ */
+@media (max-width: 50em) {
+  /* Detail Page Titles */
+  #itemDetailPage .nameContainer,
+  #itemDetailPage .nameContainer > h1.itemName,
+  #itemDetailPage h1.itemName {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    max-width: 80vw !important; /* Stops text from bleeding off the right edge */
+    overflow: visible !important;
+  }
+
+  /* Header Breadcrumb Titles */
+  .skinHeader .pageTitle:not(:empty) {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    max-width: 65vw !important;
+    text-overflow: clip !important;
+  }
+}
+/* ============================================================
+   FIX — Tone down desktop backdrop/thumb hiding
+   ============================================================ */
+/* Reduce the extreme blur and brightness drop */
+body:has(#itemDetailPage) .backdropImage,
+.withSectionTabs .backdropImage {
+  filter: blur(8px) saturate(120%) contrast(115%) brightness(75%) !important; 
+}
+
+/* Lighten the dark gradient overlay on desktop */
+.layout-desktop .detailPageWrapperContainer {
+  background: linear-gradient(
+    180deg,
+    transparent 15vh,
+    rgba(0, 0, 0, 0.55) 40vh,
+    #000 65vh
+  ) !important;
+}
+
+/* Lighten the secondary mask on the image itself */
+.itemBackdrop::after {
+  background: linear-gradient(
+    180deg,
+    transparent 45%,
+    rgba(0, 0, 0, 0.2) 65%,
+    #000 100%
+  ) !important;
+}
