@@ -239,24 +239,28 @@ html::after {
 }
 
 * {
-  scrollbar-color: rgba(var(--af-accent), 0.7) transparent !important;
+  scrollbar-color: rgba(var(--af-accent), 0.28) transparent !important;
   accent-color: rgb(var(--af-accent));
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track,
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(var(--af-accent), 0.55) !important;
+  background: rgba(var(--af-accent), 0.28) !important;
   border-radius: var(--af-radius-pill);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--af-accent)) !important;
+  background: rgba(var(--af-accent), 0.7) !important;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::selection {
@@ -1963,18 +1967,37 @@ progress {
   margin: -0.25em 0 1.1em;
 }
 
+#loginPage h1,
+#loginPage h2,
+#loginPage .sectionTitle,
 .manualLoginForm .sectionTitle,
-.visualLoginForm > h1,
-#loginPage h1 {
-  display: none;
+.visualLoginForm > h1 {
+  display: none !important;
 }
 
-#loginPage .button-submit {
+#loginPage .button-submit,
+#loginPage button[type="submit"],
+#loginPage .raised.block:not(.btnForgotPassword):not(.btnQuick):not(.cancel) {
   width: 100%;
   border-radius: var(--af-radius-pill) !important;
   height: 2.8em;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  background: rgb(var(--af-accent)) !important;
+  border-color: rgba(255, 80, 80, 0.55) !important;
+  box-shadow: 0 0 22px rgba(var(--af-accent), 0.35) !important;
+  color: #fff !important;
+}
+
+#loginPage .button-submit:hover,
+#loginPage button[type="submit"]:hover {
+  background: rgb(var(--af-accent-bright)) !important;
+}
+
+#loginPage .btnQuick,
+#loginPage .raised.block.btnQuick {
+  background: rgba(28, 8, 8, 0.55) !important;
+  box-shadow: none !important;
 }
 
 #loginPage .btnForgotPassword,

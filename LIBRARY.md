@@ -1,6 +1,6 @@
 # Raptor library — movies & next titles
 
-Snapshot from **Raptor** (Jellyfin 12) for user Shounak. 247 movies, 3 series, 675 episodes. No music, books, or box sets.
+Snapshot from **Raptor** (Jellyfin 12) for user Shounak. 247 movies, 3 series, 675 episodes, plus a **StudyLibrary** folder (course videos — e.g. the `183616_video` item on Home). No music, books, or box sets.
 
 ## At a glance
 
