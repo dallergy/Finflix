@@ -1,6 +1,6 @@
-# Finflix — Abyss Net Apex
+# Finflix — Raptor
 
-Cinematic custom CSS for **Jellyfin 12** (React / MUI layout). Successor to Abyss Net v2: same Netflix-red DNA, rebuilt so the new top bar, drawer, tabs, and detail pages actually pick it up.
+Cinematic custom CSS for **Jellyfin 12** (React / MUI layout) on the Raptor server. Forked from Abyss Net; login shows the **Raptor** wordmark and the branding splash, not the upstream theme name.
 
 ## Install
 
