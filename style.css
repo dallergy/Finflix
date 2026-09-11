@@ -1,6 +1,6 @@
 /* ============================================================
-   ABYSS NET APEX  —  Finflix for Jellyfin 12
-   Cinematic OLED successor to Abyss Net v2.
+   FINFLIX  —  Raptor theme for Jellyfin 12
+   Forked from Abyss Net; branded for server Raptor.
    Built for the React/MUI layout (Jellyfin 12+), with legacy
    web + JMP fallbacks. Accent stays true Netflix red.
 
@@ -25,9 +25,10 @@
    ============================================================ */
 :root {
   color-scheme: dark;
-  --theme-name: "Abyss Net Apex";
-  --theme-updated-on: "10 September 2026";
-  --af-footer-text: "Abyss Net Apex";
+  --theme-name: "Finflix";
+  --theme-updated-on: "11 September 2026";
+  --af-footer-text: "Raptor";
+  --af-server-name: "Raptor";
 
   /* Netflix red — Abyss Net DNA */
   --af-accent-r: 229;
@@ -195,7 +196,7 @@ html::before {
   pointer-events: none;
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   background:
     radial-gradient(900px 420px at 50% -8%, rgba(var(--af-accent), 0.2), transparent 60%),
     radial-gradient(520px 380px at 100% 100%, rgba(80, 0, 16, 0.28), transparent 55%),
@@ -207,7 +208,7 @@ html::after {
   pointer-events: none;
   position: fixed;
   inset: 0;
-  z-index: 8;
+  z-index: -1;
   opacity: 0.045;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
@@ -215,6 +216,33 @@ html::after {
 
 .layout-tv html::after,
 .layout-tv body::after {
+  display: none !important;
+}
+
+/* Playback: never paint nebula/grain/scrims over the HTML5 video */
+html:has(#videoOsdPage)::before,
+html:has(#videoOsdPage)::after,
+html:has(.videoOsdBottom)::before,
+html:has(.videoOsdBottom)::after,
+html:has(.osdHeader)::before,
+html:has(.osdHeader)::after,
+html:has(.htmlvideoplayer)::before,
+html:has(.htmlvideoplayer)::after,
+html:has(.videoPlayerContainer)::before,
+html:has(.videoPlayerContainer)::after,
+html.videoPlayer::before,
+html.videoPlayer::after,
+html:has(#loginPage)::before,
+html:has(#loginPage)::after {
+  display: none !important;
+  content: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  background: none !important;
+}
+
+html:has(#loginPage) .MuiAppBar-root,
+html:has(#loginPage) .skinHeader:not(.osdHeader) {
   display: none !important;
 }
 
@@ -1782,12 +1810,92 @@ progress {
   padding: 10px 14px !important;
 }
 
+/* Do not paint a full-frame gradient over the video surface */
 .videoOsdBottom.videoOsdBottom-maincontrols {
-  background: var(--af-osd-bottom) !important;
+  background: transparent !important;
 }
 
 .skinHeader-withBackground.osdHeader {
   background: var(--af-osd-top) !important;
+}
+
+html:has(#videoOsdPage),
+html:has(#videoOsdPage) body,
+html:has(.videoOsdBottom),
+html:has(.osdHeader) body,
+html:has(.htmlvideoplayer) body {
+  background: #000 !important;
+  background-image: none !important;
+}
+
+html:has(#videoOsdPage) .backgroundContainer,
+html:has(#videoOsdPage) .backdropContainer,
+html:has(.videoOsdBottom) .backgroundContainer,
+html:has(.videoOsdBottom) .backdropContainer,
+html:has(.osdHeader) .backgroundContainer,
+html:has(.osdHeader) .backdropContainer,
+html:has(.htmlvideoplayer) .backgroundContainer,
+html:has(.htmlvideoplayer) .backdropContainer {
+  background: transparent !important;
+  background-image: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#videoOsdPage,
+#videoOsdPage.libraryPage,
+.videoPlayerContainer,
+.htmlvideoplayer,
+video.htmlvideoplayer,
+#videoOsdPage video,
+.videoPlayerContainer video {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+video.htmlvideoplayer,
+#videoOsdPage video,
+.videoPlayerContainer video,
+video {
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 1 !important;
+}
+
+#videoOsdPage.libraryPage {
+  padding-top: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+html:has(#videoOsdPage) .MuiAppBar-root,
+html:has(.osdHeader) .MuiAppBar-root,
+html:has(.videoOsdBottom) .MuiAppBar-root {
+  background: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+#videoOsdPage input[type="range"],
+.videoOsdBottom input[type="range"] {
+  accent-color: rgb(var(--af-accent)) !important;
+}
+
+#videoOsdPage input[type="range"]::-webkit-slider-thumb,
+.videoOsdBottom input[type="range"]::-webkit-slider-thumb,
+.videoOsdBottom .mdl-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  border: 2px solid rgb(var(--af-accent)) !important;
+  box-shadow: 0 0 8px rgba(var(--af-accent), 0.55);
 }
 
 .startTimeText,
@@ -1906,65 +2014,82 @@ progress {
 }
 
 /* ============================================================
-   16. LOGIN
+   16. LOGIN — server splash + Raptor wordmark
    ============================================================ */
 #loginPage {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   min-height: 100vh;
-  background:
-    radial-gradient(900px 480px at 50% -10%, rgba(var(--af-accent), 0.42), transparent 58%),
-    radial-gradient(500px 360px at 110% 90%, rgba(90, 0, 20, 0.4), transparent 50%),
-    radial-gradient(420px 300px at -10% 80%, rgba(40, 0, 12, 0.45), transparent 52%),
-    #000 !important;
+  background-color: #000 !important;
+  background-image: url("/Branding/Splashscreen") !important;
   background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+#loginPage::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.38) 0%,
+    rgba(0, 0, 0, 0.08) 42%,
+    rgba(0, 0, 0, 0.62) 100%
+  );
 }
 
 #loginPage::before {
-  content: "ABYSS NET";
+  content: var(--af-server-name);
   position: fixed;
-  top: 9vh;
+  top: max(5vh, env(safe-area-inset-top, 0px) + 1.2rem);
   left: 0;
   right: 0;
   text-align: center;
   font-family: var(--af-font-display);
   font-weight: 900;
-  font-size: clamp(1.4rem, 4vw, 2.4rem);
-  letter-spacing: 0.42em;
-  color: rgba(255, 255, 255, 0.88);
-  text-shadow: 0 0 32px rgba(var(--af-accent), 0.55);
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow:
+    0 4px 28px rgba(0, 0, 0, 0.9),
+    0 0 36px rgba(var(--af-accent), 0.45);
   pointer-events: none;
-  z-index: 2;
+  z-index: 4;
 }
 
 #loginPage .padded-left.padded-right.padded-bottom-page {
-  width: min(28em, 92vw);
+  width: min(26em, 90vw);
   border: 1px solid var(--af-border) !important;
   border-radius: 24px !important;
-  background: rgba(8, 2, 3, 0.62) !important;
+  background: rgba(8, 2, 3, 0.52) !important;
   backdrop-filter: blur(var(--af-blur-lg)) saturate(140%);
   box-shadow:
-    0 0 60px rgba(var(--af-accent), 0.18),
+    0 0 60px rgba(var(--af-accent), 0.16),
     var(--af-shadow),
     var(--af-inset-glass);
-  padding: 2.1em 1.8em 1.35em !important;
-  margin-top: 4vh !important;
+  padding: 1.6em 1.5em 1.1em !important;
+  margin: 0 auto 7vh !important;
   position: relative;
   z-index: 3;
 }
 
 .manualLoginForm::before,
 .visualLoginForm::before {
-  content: "Sign in to continue";
+  content: "Sign in";
   display: block;
   text-align: center;
   font-family: var(--af-font-display);
   font-weight: 800;
-  font-size: 1.28rem;
-  letter-spacing: 0.08em;
+  font-size: 1.05rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #fff;
-  margin: -0.25em 0 1.1em;
+  margin: -0.15em 0 0.95em;
 }
 
 #loginPage h1,
@@ -2233,9 +2358,48 @@ table:not(.MuiTable-root) {
 .layout-mobile .headerUserButton,
 .layout-mobile .headerCastButton,
 .layout-mobile .headerSyncButton {
-  width: 38px !important;
-  height: 38px !important;
-  min-width: 38px !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+}
+
+.layout-mobile .MuiToolbar-root {
+  min-height: 48px !important;
+  padding-left: 12px !important;
+  padding-right: 8px !important;
+  overflow: visible !important;
+  column-gap: 2px !important;
+}
+
+.layout-mobile .MuiToolbar-root .MuiIconButton-root {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.layout-mobile .MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) {
+  font-size: 0.72rem !important;
+  letter-spacing: 0.1em !important;
+}
+
+html.layout-mobile .MuiToolbar-root .MuiTypography-root,
+html.layout-mobile .MuiTypography-h1,
+html.layout-mobile .MuiTypography-h2,
+html.layout-mobile .MuiTypography-h3,
+html.layout-mobile .MuiTypography-h4,
+html.layout-mobile .MuiTypography-h5,
+html.layout-mobile .MuiTypography-h6 {
+  font-family: var(--af-font-ui) !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  max-width: none !important;
+  min-width: max-content !important;
+  margin-left: 0 !important;
+  padding-left: 2px !important;
+  flex-shrink: 0 !important;
+  text-align: left !important;
 }
 
 @media (max-width: 50em) {
@@ -2245,14 +2409,15 @@ table:not(.MuiTable-root) {
   }
 
   .pageTitle {
-    font-size: 0.95rem !important;
+    font-size: 0.88rem !important;
+    letter-spacing: 0.04em !important;
   }
 
   .nameContainer > h1.itemName,
   .nameContainer > h1.parentName,
   #itemDetailPage .nameContainer > h1.itemName,
   #itemDetailPage h1.itemName {
-    font-size: 1.65rem !important;
+    font-size: 1.35rem !important;
   }
 
   #itemDetailPage .nameContainer,
@@ -2260,7 +2425,7 @@ table:not(.MuiTable-root) {
   #itemDetailPage h1.itemName {
     white-space: normal !important;
     word-break: break-word !important;
-    max-width: 80vw !important;
+    max-width: 92vw !important;
     overflow: visible !important;
   }
 
@@ -2276,8 +2441,13 @@ table:not(.MuiTable-root) {
   }
 
   #loginPage::before {
-    letter-spacing: 0.22em;
-    font-size: 1.15rem;
+    letter-spacing: 0.18em;
+    font-size: 1.35rem;
+  }
+
+  #loginPage .padded-left.padded-right.padded-bottom-page {
+    margin-bottom: 4.5vh !important;
+    padding: 1.25em 1.1em 0.9em !important;
   }
 }
 
@@ -2448,9 +2618,183 @@ body:not(:has(.MuiAppBar-root)) .libraryPage:not(.noSecondaryNavPage) {
 }
 
 /* ============================================================
-   END — Abyss Net Apex
+   23. MOBILE LIBRARY — stop clipping titles / chrome
+   ============================================================ */
+@media (max-width: 75em) {
+  :root {
+    --af-side-pad: 12px;
+    --af-header-h: 3.5rem;
+  }
+
+  body:has(.MuiAppBar-root) .libraryPage,
+  body:has(.MuiAppBar-root) .libraryPage.withTabs,
+  body:has(.MuiAppBar-root) .homePage.libraryPage.withTabs,
+  .layout-mobile .libraryPage,
+  .layout-mobile .libraryPage.withTabs {
+    padding-top: max(4.6rem, calc(env(safe-area-inset-top, 0px) + 3.6rem)) !important;
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  .layout-mobile #videoOsdPage.libraryPage,
+  html:has(#videoOsdPage) .libraryPage {
+    padding: 0 !important;
+  }
+
+  .layout-mobile .padded-left,
+  .layout-mobile [dir="ltr"] .padded-left {
+    padding-left: max(14px, env(safe-area-inset-left, 0px)) !important;
+  }
+
+  .layout-mobile .padded-right,
+  .layout-mobile [dir="ltr"] .padded-right {
+    padding-right: max(14px, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  .layout-mobile .content-primary,
+  .layout-mobile [dir="ltr"] .content-primary,
+  .layout-mobile [dir="ltr"] .detailPageContent {
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  /* Library heading row: "MOVIES" was clipping off the left edge */
+  html.layout-mobile .libraryPage > .padded-left,
+  html.layout-mobile .libraryPage > .padded-top.padded-left.padded-right,
+  html.layout-mobile .libraryPage .padded-top.padded-left.padded-right,
+  html.layout-mobile .padded-top.padded-left.padded-right {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    padding-left: 16px !important;
+    margin-left: 0 !important;
+  }
+
+  html.layout-mobile .absolutePageTabContent {
+    left: 0 !important;
+    right: 0 !important;
+    padding-left: 8px !important;
+  }
+
+  html.layout-mobile .libraryPage h1,
+  html.layout-mobile .libraryPage h1.pageTitle,
+  html.layout-mobile h1.pageTitle,
+  html.layout-mobile .libraryPage .pageTitle,
+  html.layout-mobile .padded-top.padded-left h1 {
+    font-family: var(--af-font-ui) !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    line-height: 1.25 !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: nowrap !important;
+    max-width: none !important;
+    width: auto !important;
+    padding-left: 4px !important;
+    margin-left: 8px !important;
+    text-align: left !important;
+    text-indent: 0 !important;
+    transform: none !important;
+    clip: auto !important;
+    clip-path: none !important;
+    flex: 0 1 auto !important;
+    min-width: max-content !important;
+  }
+
+  .layout-mobile .headerTop,
+  .layout-mobile .padded-top.padded-left.padded-right {
+    flex-wrap: wrap !important;
+    gap: 0.25rem 0.4rem !important;
+    align-items: center !important;
+  }
+
+  .layout-mobile .btnPlay,
+  .layout-mobile .raised.headerButton,
+  .layout-mobile .paper-icon-button-light[title],
+  .layout-mobile .emby-button.raised {
+    min-width: 0 !important;
+    font-size: 0.78rem !important;
+  }
+
+  .layout-mobile .cardText,
+  .layout-mobile .cardText-first,
+  .layout-mobile .cardText-secondary,
+  .layout-mobile .cardTextCentered,
+  .layout-mobile .cardTextCentered > .textActionButton {
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0 !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    max-width: 100% !important;
+  }
+
+  .layout-mobile .cardText-secondary {
+    font-size: 0.64rem !important;
+    opacity: 0.7 !important;
+    -webkit-line-clamp: 1 !important;
+    line-clamp: 1 !important;
+  }
+
+  .layout-mobile .cardBox-bottompadded {
+    margin-bottom: 0.3em !important;
+  }
+
+  .layout-mobile .itemsContainer > .card > .cardBox {
+    margin-left: 0.28em !important;
+    margin-right: 0.28em !important;
+  }
+
+  .layout-mobile .alphaPicker-vertical,
+  .layout-mobile .alphaPickerRow-vertical {
+    font-size: 0.62rem !important;
+    padding: 4px 0 !important;
+    width: auto !important;
+    min-width: 1em !important;
+  }
+
+  .layout-mobile .alphaPickerButton {
+    font-size: 0.62rem !important;
+    min-width: 1em !important;
+    padding: 0 !important;
+  }
+
+  .layout-mobile .sectionTitle,
+  .layout-mobile h2.sectionTitle,
+  .layout-mobile .sectionTitle-cards {
+    font-size: 0.72rem !important;
+    letter-spacing: 0.1em !important;
+  }
+
+  .layout-mobile .videoOsdBottom {
+    margin: 10px 10px 12px !important;
+  }
+
+  .layout-mobile .videoOsdBottom .osdControls,
+  .layout-mobile .nowPlayingBar {
+    border-radius: 16px !important;
+    padding: 8px 10px !important;
+  }
+}
+
+@media (max-width: 26em) {
+  .layout-mobile .libraryPage h1,
+  .layout-mobile .libraryPage .pageTitle {
+    font-size: 0.92rem !important;
+  }
+}
+
+/* ============================================================
+   END — Finflix / Raptor
    Tweaks:
    • Classic Netflix red: --af-accent-r/g/b: 229, 9, 20
+   • Server wordmark:     --af-server-name
    • Hide footer:         --af-footer-text: ""
    • Display theme: Dark · Backdrops: On
    ============================================================ */
