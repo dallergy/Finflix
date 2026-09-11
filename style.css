@@ -241,6 +241,11 @@ html:has(#loginPage)::after {
   background: none !important;
 }
 
+html:has(#loginPage) .MuiAppBar-root,
+html:has(#loginPage) .skinHeader:not(.osdHeader) {
+  display: none !important;
+}
+
 .material-icons,
 .material-icons-round,
 .material-symbols-rounded,
@@ -2360,8 +2365,10 @@ table:not(.MuiTable-root) {
 
 .layout-mobile .MuiToolbar-root {
   min-height: 48px !important;
-  padding-left: 4px !important;
-  padding-right: 4px !important;
+  padding-left: 12px !important;
+  padding-right: 8px !important;
+  overflow: visible !important;
+  column-gap: 2px !important;
 }
 
 .layout-mobile .MuiToolbar-root .MuiIconButton-root {
@@ -2372,6 +2379,27 @@ table:not(.MuiTable-root) {
 .layout-mobile .MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) {
   font-size: 0.72rem !important;
   letter-spacing: 0.1em !important;
+}
+
+html.layout-mobile .MuiToolbar-root .MuiTypography-root,
+html.layout-mobile .MuiTypography-h1,
+html.layout-mobile .MuiTypography-h2,
+html.layout-mobile .MuiTypography-h3,
+html.layout-mobile .MuiTypography-h4,
+html.layout-mobile .MuiTypography-h5,
+html.layout-mobile .MuiTypography-h6 {
+  font-family: var(--af-font-ui) !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  max-width: none !important;
+  min-width: max-content !important;
+  margin-left: 0 !important;
+  padding-left: 2px !important;
+  flex-shrink: 0 !important;
+  text-align: left !important;
 }
 
 @media (max-width: 50em) {
@@ -2631,21 +2659,46 @@ body:not(:has(.MuiAppBar-root)) .libraryPage:not(.noSecondaryNavPage) {
   }
 
   /* Library heading row: "MOVIES" was clipping off the left edge */
-  .layout-mobile .libraryPage h1,
-  .layout-mobile .libraryPage .pageTitle,
-  .layout-mobile h1.pageTitle,
-  .layout-mobile .listHeader,
-  .layout-mobile .padded-top.padded-left h1 {
-    font-family: var(--af-font-display) !important;
+  html.layout-mobile .libraryPage > .padded-left,
+  html.layout-mobile .libraryPage > .padded-top.padded-left.padded-right,
+  html.layout-mobile .libraryPage .padded-top.padded-left.padded-right,
+  html.layout-mobile .padded-top.padded-left.padded-right {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    padding-left: 16px !important;
+    margin-left: 0 !important;
+  }
+
+  html.layout-mobile .absolutePageTabContent {
+    left: 0 !important;
+    right: 0 !important;
+    padding-left: 8px !important;
+  }
+
+  html.layout-mobile .libraryPage h1,
+  html.layout-mobile .libraryPage h1.pageTitle,
+  html.layout-mobile h1.pageTitle,
+  html.layout-mobile .libraryPage .pageTitle,
+  html.layout-mobile .padded-top.padded-left h1 {
+    font-family: var(--af-font-ui) !important;
     font-size: 1.05rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.08em !important;
-    line-height: 1.2 !important;
+    letter-spacing: 0.06em !important;
+    line-height: 1.25 !important;
     overflow: visible !important;
     text-overflow: unset !important;
+    white-space: nowrap !important;
     max-width: none !important;
-    padding-left: 0.12em !important;
-    margin-left: 0 !important;
+    width: auto !important;
+    padding-left: 4px !important;
+    margin-left: 8px !important;
+    text-align: left !important;
+    text-indent: 0 !important;
+    transform: none !important;
+    clip: auto !important;
+    clip-path: none !important;
+    flex: 0 1 auto !important;
+    min-width: max-content !important;
   }
 
   .layout-mobile .headerTop,
