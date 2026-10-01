@@ -445,6 +445,18 @@ h2.sectionTitle::after,
   margin-top: 5px !important;
 }
 
+/* Full titles on desktop too: wrap to two lines instead of "The Bi…" */
+.layout-desktop .cardText-first,
+.layout-tv .cardText-first {
+  white-space: normal !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.25;
+}
+
 .cardTextCentered,
 .cardTextCentered > .textActionButton {
   text-align: left !important;
@@ -1783,12 +1795,11 @@ progress {
 }
 
 .layout-desktop .detailPageWrapperContainer {
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.6) 0,
-    rgba(0, 0, 0, 0.85) 30vh,
-    #000 60vh
-  ) !important;
+  /* Continues the backdrop scrim (same side vignette, same 0.6 start) so
+     there is no seam where the backdrop ends. */
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.18) 38%, transparent 62%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0, rgba(0, 0, 0, 0.85) 30vh, #000 60vh) !important;
   min-height: 42vh;
 }
 
@@ -1804,6 +1815,32 @@ progress {
   margin-bottom: 1.5vh;
   background-position: 0 50%;
   flex-shrink: 0;
+}
+
+/* Desktop: the title logo sits top-right over the backdrop, clear of the
+   title column (whose height varies with long names and episode lines).
+   In flow it sat behind the chips and pushed the page down, leaving an
+   unscrimmed band. */
+.layout-desktop #itemDetailPage .detailLogo {
+  position: absolute;
+  inset: calc(4rem + 11vh) 5vw auto auto;
+  z-index: 2;
+  width: min(30vw, 460px);
+  height: min(16vh, 150px);
+  margin: 0;
+  background-position: right center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.85));
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .layout-desktop #itemDetailPage .detailLogo {
+    animation: fx-backdrop-recede linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 70vh;
+  }
 }
 
 .layout-mobile .detailLogo {
@@ -1897,6 +1934,21 @@ progress {
   border-radius: 6px;
   padding: 0.15em 0.55em;
   color: #fff;
+}
+
+/* Chips separate themselves: hide the ", " text nodes between them */
+.itemExternalLinks.focuscontainer-x:has(> a),
+.itemDetailsGroup .detailsGroupItem > .focuscontainer-x:has(a.button-link) {
+  font-size: 0 !important; /* beats JF's inline font-size:92% */
+}
+
+.itemExternalLinks.focuscontainer-x > a {
+  font-size: 0.85rem;
+  margin: 0 0.4em 0.4em 0;
+}
+
+.itemDetailsGroup .detailsGroupItem > .focuscontainer-x:has(a.button-link) a {
+  font-size: 0.95rem;
 }
 
 .itemExternalLinks.focuscontainer-x > a:hover,
@@ -3089,10 +3141,11 @@ body:not(:has(.MuiAppBar-root)) .libraryPage:not(.noSecondaryNavPage) {
     padding-left: 8px !important;
   }
 
-  html.layout-mobile .libraryPage h1,
-  html.layout-mobile .libraryPage h1.pageTitle,
+  /* Not the detail page: its title must wrap, not grow to max-content */
+  html.layout-mobile .libraryPage:not(#itemDetailPage) h1,
+  html.layout-mobile .libraryPage:not(#itemDetailPage) h1.pageTitle,
   html.layout-mobile h1.pageTitle,
-  html.layout-mobile .libraryPage .pageTitle,
+  html.layout-mobile .libraryPage:not(#itemDetailPage) .pageTitle,
   html.layout-mobile .padded-top.padded-left h1 {
     font-family: var(--fx-font-ui) !important;
     font-size: 1.05rem !important;
@@ -3198,8 +3251,8 @@ body:not(:has(.MuiAppBar-root)) .libraryPage:not(.noSecondaryNavPage) {
 }
 
 @media (max-width: 26em) {
-  .layout-mobile .libraryPage h1,
-  .layout-mobile .libraryPage .pageTitle {
+  .layout-mobile .libraryPage:not(#itemDetailPage) h1,
+  .layout-mobile .libraryPage:not(#itemDetailPage) .pageTitle {
     font-size: 0.92rem !important;
   }
 }
