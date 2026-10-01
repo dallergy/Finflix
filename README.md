@@ -53,21 +53,26 @@ Put overrides **after** the `@import` (or at the top of a pasted file).
 
 | Variable | Role |
 | --- | --- |
-| `--fx-server-name` | Login (and related) wordmark. Defaults to `Finflix`. Set this to your server name. |
+| `--fx-server-name` | Header and login wordmark. Defaults to `Finflix`. Set this to your server name. |
 | `--fx-footer-text` | Label under the side drawer. Set to `""` to hide it. |
 | `--fx-accent-r/g/b` | Accent RGB channels (no `rgb()` wrapper). Default is Netflix red `229, 9, 20`. |
 | `--fx-radius`, `--fx-radius-sm`, `--fx-radius-lg` | Corner rounding. |
 | `--fx-font-ui`, `--fx-font-display`, `--fx-font-cinema` | Rajdhani / Orbitron / Cinzel stacks. |
+| `--fx-font-brand` | Wordmark face (Bebas Neue). |
 
 Screenshots below were taken on a live server whose wordmark was customized with `--fx-server-name`. Your login shows whatever you set.
 
 ## What you get
 
 - OLED black, nebula wash, glass chrome, red corona on poster hover
+- Bebas Neue red wordmark (`--fx-server-name`) in the header and on login
+- Header melts into the page at the top and condenses into frosted glass as you scroll (scroll-driven, no JS)
+- Active library gets a lit red underline in the nav
+- Detail hero: title, metadata chips and a labelled **Play / Resume** pill stacked over the backdrop, credits as chips, backdrop recedes on scroll
 - Jellyfin 12 AppBar, toolbar, drawers, menus, chips, and tabs
 - Cinzel titles on the detail page, Orbitron section headers
-- Login splash from `/Branding/Splashscreen` plus a glass sign-in card
-- HTML5 player: video stays uncovered; OSD is a thin glass bar
+- Login: Ken Burns drift on `/Branding/Splashscreen` (red nebula fallback), glass card with a lit gradient edge
+- HTML5 player: video stays uncovered; OSD is a thin glass bar with red seek and volume
 - Mobile library titles stay unclipped (no “OVIES”)
 - Full titles on cards (no “The Bi…”), progress bars, TV focus, `prefers-reduced-motion`
 

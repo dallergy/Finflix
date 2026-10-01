@@ -14,7 +14,7 @@
      --fx-accent-r/g/b  accent colour (default Netflix red)
    ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Bebas+Neue&display=swap");
 
 @font-face {
   font-family: "Material Icons Round";
@@ -31,7 +31,7 @@
 :root {
   color-scheme: dark;
   --theme-name: "Finflix";
-  --theme-updated-on: "11 September 2026";
+  --theme-updated-on: "1 October 2026";
   --fx-footer-text: "Finflix";
   --fx-server-name: "Finflix";
 
@@ -85,6 +85,7 @@
   --fx-font-display: "Orbitron", "Rajdhani", sans-serif;
   --fx-font-cinema: "Cinzel", "Rajdhani", serif;
   --fx-font-mono: "Share Tech Mono", ui-monospace, monospace;
+  --fx-font-brand: "Bebas Neue", "Oswald", "Impact", "Arial Narrow", sans-serif;
 
   --fx-bg-gradient: radial-gradient(
       1200px 600px at 50% -10%,
@@ -225,10 +226,8 @@ html::after {
 }
 
 /* Playback: never paint nebula/grain/scrims over the HTML5 video */
-html:has(#videoOsdPage)::before,
-html:has(#videoOsdPage)::after,
-html:has(.videoOsdBottom)::before,
-html:has(.videoOsdBottom)::after,
+html:has(#videoOsdPage:not(.hide))::before,
+html:has(#videoOsdPage:not(.hide))::after,
 html:has(.osdHeader)::before,
 html:has(.osdHeader)::after,
 html:has(.htmlvideoplayer)::before,
@@ -237,8 +236,8 @@ html:has(.videoPlayerContainer)::before,
 html:has(.videoPlayerContainer)::after,
 html.videoPlayer::before,
 html.videoPlayer::after,
-html:has(#loginPage)::before,
-html:has(#loginPage)::after {
+html:has(#loginPage:not(.hide))::before,
+html:has(#loginPage:not(.hide))::after {
   display: none !important;
   content: none !important;
   opacity: 0 !important;
@@ -246,8 +245,8 @@ html:has(#loginPage)::after {
   background: none !important;
 }
 
-html:has(#loginPage) .MuiAppBar-root,
-html:has(#loginPage) .skinHeader:not(.osdHeader) {
+html:has(#loginPage:not(.hide)) .MuiAppBar-root,
+html:has(#loginPage:not(.hide)) .skinHeader:not(.osdHeader) {
   display: none !important;
 }
 
@@ -341,7 +340,7 @@ html,
   filter: blur(16px) saturate(140%) contrast(118%) brightness(48%) !important;
 }
 
-body:has(#itemDetailPage) .backdropImage,
+body:has(#itemDetailPage:not(.hide)) .backdropImage,
 .withSectionTabs .backdropImage {
   filter: blur(10px) saturate(128%) contrast(116%) brightness(62%) !important;
 }
@@ -482,17 +481,44 @@ h2.sectionTitle::after,
 /* ============================================================
    5. JELLYFIN 12 — MUI APP BAR / TABS / DRAWER
    ============================================================ */
-.MuiAppBar-root.MuiAppBar-colorTransparent,
-.MuiAppBar-root.MuiAppBar-colorDefault,
-.MuiAppBar-root.MuiAppBar-colorPrimary,
-.MuiAppBar-root {
-  background-color: transparent !important;
-  background-image: var(--fx-header-fade) !important;
+/* Not !important on purpose: the scroll-driven animation below has to be
+   able to override background, border and blur. Specificity (0,2,1)
+   already beats MUI's emotion class. */
+header.MuiAppBar-root.MuiAppBar-root {
+  background-color: rgba(4, 1, 2, 0.8);
+  background-image: none;
   box-shadow: none !important;
-  border-bottom: 1px solid rgba(var(--fx-accent), 0.22) !important;
-  backdrop-filter: blur(var(--fx-blur-md)) saturate(140%);
-  -webkit-backdrop-filter: blur(var(--fx-blur-md)) saturate(140%);
+  border-bottom: 1px solid rgba(var(--fx-accent), 0.22);
+  backdrop-filter: blur(var(--fx-blur-lg)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--fx-blur-lg)) saturate(160%);
   color: #fff !important;
+}
+
+/* At the top of a page the bar melts into the backdrop (just a fade for
+   legibility); as soon as you scroll it condenses into frosted glass. */
+@supports (animation-timeline: scroll()) {
+  header.MuiAppBar-root.MuiAppBar-root {
+    animation: fx-appbar-condense linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 120px;
+  }
+
+  @keyframes fx-appbar-condense {
+    from {
+      background-color: rgba(4, 1, 2, 0);
+      background-image: var(--fx-header-fade);
+      border-bottom-color: rgba(var(--fx-accent), 0);
+      backdrop-filter: blur(0px) saturate(100%);
+      -webkit-backdrop-filter: blur(0px) saturate(100%);
+    }
+    to {
+      background-color: rgba(4, 1, 2, 0.8);
+      background-image: none;
+      border-bottom-color: rgba(var(--fx-accent), 0.22);
+      backdrop-filter: blur(var(--fx-blur-lg)) saturate(160%);
+      -webkit-backdrop-filter: blur(var(--fx-blur-lg)) saturate(160%);
+    }
+  }
 }
 
 .MuiToolbar-root {
@@ -555,21 +581,41 @@ h2.sectionTitle::after,
   color: rgb(var(--fx-accent-soft)) !important;
 }
 
-/* Header logo / server label */
+/* Header logo: the Jellyfin glyph + server name become the Finflix
+   wordmark (--fx-server-name), set in a condensed cinema face. */
 .MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) {
-  font-family: var(--fx-font-display) !important;
-  font-weight: 700 !important;
-  font-size: 0.95rem !important;
-  letter-spacing: 0.18em !important;
-  text-transform: uppercase !important;
-  color: #fff !important;
+  font-size: 0 !important;
+  color: transparent !important;
   min-width: 0 !important;
-  text-shadow: 0 0 18px rgba(var(--fx-accent), 0.45);
+  padding: 0 0.9rem 0 0.35rem !important;
+  margin-right: 0.4rem !important;
+  background: none !important;
 }
 
-.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon img {
-  filter: brightness(0) invert(1) sepia(1) saturate(8) hue-rotate(-20deg);
-  opacity: 0.95;
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) .MuiButton-startIcon {
+  display: none !important;
+}
+
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img)::after {
+  content: var(--fx-server-name);
+  font-family: var(--fx-font-brand);
+  font-size: 2.15rem;
+  line-height: 1;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-top: 0.08em;
+  background: linear-gradient(180deg, rgb(var(--fx-accent-bright)) 0%, rgb(var(--fx-accent)) 55%, #9e0710 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(var(--fx-accent), 0.45));
+  transition: filter 0.3s var(--fx-ease), transform 0.3s var(--fx-ease);
+}
+
+.MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img):hover::after {
+  filter: drop-shadow(0 2px 16px rgba(var(--fx-accent), 0.85));
+  transform: scale(1.04);
 }
 
 header .MuiButton-textPrimary.MuiButton-colorPrimary,
@@ -587,9 +633,47 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary[aria-current="page"] {
   color: #fff !important;
 }
 
-header .MuiButton-textPrimary.MuiButton-colorPrimary:hover {
-  color: rgb(var(--fx-accent-soft)) !important;
-  background: rgba(var(--fx-accent), 0.12) !important;
+/* Nav links: underline grows from the centre on hover; the current
+   library (JF marks it colorPrimary) keeps a lit red bar. */
+header .MuiToolbar-root a.MuiButton-text {
+  position: relative;
+  background: none !important;
+}
+
+header .MuiToolbar-root a.MuiButton-text:not(:has(.MuiButton-startIcon img))::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgb(var(--fx-accent));
+  box-shadow: 0 0 10px rgba(var(--fx-accent), 0.9);
+  transform: scaleX(0);
+  transition: transform 0.35s var(--fx-ease);
+}
+
+header .MuiToolbar-root a.MuiButton-text:hover {
+  color: #fff !important;
+}
+
+header .MuiToolbar-root a.MuiButton-text:hover::after {
+  transform: scaleX(0.6);
+}
+
+header .MuiToolbar-root a.MuiButton-colorPrimary {
+  color: #fff !important;
+}
+
+header .MuiToolbar-root a.MuiButton-colorPrimary::after,
+header .MuiToolbar-root a.MuiButton-colorPrimary:hover::after {
+  transform: scaleX(1);
+}
+
+header .MuiToolbar-root a.MuiButton-colorPrimary .MuiButton-startIcon {
+  color: rgb(var(--fx-accent));
+  filter: drop-shadow(0 0 6px rgba(var(--fx-accent), 0.7));
 }
 
 .MuiTabs-root {
@@ -665,10 +749,33 @@ header .MuiButton-textPrimary.MuiButton-colorPrimary:hover {
   font-family: var(--fx-font-ui) !important;
 }
 
+/* MUI derives the track from its stock blue (#00526e); retint it. */
+.MuiLinearProgress-root {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+}
+
 .MuiLinearProgress-bar,
 .MuiLinearProgress-bar1Determinate,
 .MuiLinearProgress-bar1Indeterminate {
-  background-color: rgb(var(--fx-accent)) !important;
+  background: linear-gradient(90deg, rgb(var(--fx-accent)), rgb(var(--fx-accent-bright))) !important;
+  box-shadow: 0 0 8px rgba(var(--fx-accent), 0.7);
+}
+
+/* JF12 grid cards: a slim inset pill instead of an edge-to-edge strip */
+.itemLinearProgress.MuiLinearProgress-root {
+  position: absolute !important;
+  left: 8% !important;
+  right: 8% !important;
+  width: auto !important;
+  bottom: 8px !important;
+  height: 4px !important;
+  border-radius: var(--fx-radius-pill) !important;
+  background-color: rgba(0, 0, 0, 0.55) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.itemLinearProgress .MuiLinearProgress-bar {
+  border-radius: var(--fx-radius-pill);
 }
 
 .MuiSwitch-switchBase.Mui-checked {
@@ -907,12 +1014,16 @@ body:not(:has(.MuiAppBar-root)) .drawer-open {
   color: rgb(var(--fx-accent-soft)) !important;
 }
 
+/* The footer is an empty fixed strip until the now-playing bar mounts
+   in it; giving it a border drew a stray line across every page. */
 .appfooter {
-  background: rgba(0, 0, 0, 0.9) !important;
-  backdrop-filter: blur(var(--fx-blur-md));
-  margin: 16px;
-  border-radius: 20px;
-  border: 1px solid var(--fx-border-subtle);
+  background: transparent !important;
+  border: 0 !important;
+  margin: 0 !important;
+}
+
+.appfooter .nowPlayingBar {
+  margin: 0 12px 12px !important;
 }
 
 .dashboardFooter::after,
@@ -1276,6 +1387,19 @@ a[data-role="button"],
   border-radius: var(--fx-radius-pill);
   border: 1px solid var(--fx-border-subtle);
   padding: 2px 4px !important;
+  backdrop-filter: blur(var(--fx-blur-sm));
+}
+
+/* Rows that fit on screen hide both arrows; drop the empty pill too. */
+.emby-scrollbuttons:not(:has(.emby-scrollbuttons-button:not(.hide))) {
+  background: none;
+  border-color: transparent;
+}
+
+.emby-scrollbuttons-button:not(:disabled):hover {
+  color: #fff !important;
+  background: rgb(var(--fx-accent)) !important;
+  box-shadow: 0 0 14px rgba(var(--fx-accent), 0.6);
 }
 
 /* ============================================================
@@ -1501,26 +1625,41 @@ fieldset {
 /* ============================================================
    12. SLIDERS / PROGRESS / SPINNER
    ============================================================ */
+/* Vendor pseudo-elements live in their own rules: one unknown selector
+   (e.g. ::-moz-progress-bar in Chromium) would void the whole list. */
 .mdl-slider-background-lower,
 .playbackProgress > div,
-.iconOsdProgressInner,
-::-webkit-progress-value,
-::-moz-progress-bar {
+.iconOsdProgressInner {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--fx-accent)),
+    rgb(var(--fx-accent-bright))
+  ) !important;
+  box-shadow: 0 0 10px rgba(var(--fx-accent), 0.55);
+}
+
+progress::-webkit-progress-value {
+  background-color: rgb(var(--fx-accent)) !important;
+}
+progress::-moz-progress-bar {
   background-color: rgb(var(--fx-accent)) !important;
 }
 
 .mdl-slider-background-flex,
 .mdl-slider-background-upper,
 .backgroundProgress > div {
-  background: rgba(var(--fx-accent), 0.18) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
 }
 
-.mdl-slider::-webkit-slider-thumb,
-.mdl-slider::-moz-range-thumb,
-.mdl-slider::-ms-thumb {
+.mdl-slider::-webkit-slider-thumb {
   background: #fff !important;
-  border-radius: 3px;
-  box-shadow: 0 0 8px rgba(var(--fx-accent), 0.55);
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 3px rgba(var(--fx-accent), 0.45), 0 0 12px rgba(var(--fx-accent), 0.7) !important;
+}
+.mdl-slider::-moz-range-thumb {
+  background: #fff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 3px rgba(var(--fx-accent), 0.45), 0 0 12px rgba(var(--fx-accent), 0.7) !important;
 }
 
 .sliderMarker.watched,
@@ -1532,9 +1671,15 @@ fieldset {
   background: hsl(0 0% 30%) !important;
 }
 
-.mdl-spinner__layer-1,
-.mdl-spinner__circle {
+/* Colour the layers, not the circles: the circles inherit, and JF keeps
+   one side transparent to draw the arc. Painting them directly gave a
+   static full ring. */
+.mdl-spinner__layer {
   border-color: rgb(var(--fx-accent)) !important;
+}
+
+.mdl-spinner {
+  filter: drop-shadow(0 0 10px rgba(var(--fx-accent), 0.65));
 }
 
 .progressring-spiner {
@@ -1594,26 +1739,55 @@ progress {
   );
 }
 
+/* JF draws no ::after on the backdrop; give it a real cinematic scrim:
+   left vignette for the title side, soft fade into the page below. */
 .itemBackdrop::after {
-  background: linear-gradient(
-    180deg,
-    transparent 28%,
-    rgba(0, 0, 0, 0.35) 58%,
-    #000 100%
-  ) !important;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.18) 38%, transparent 62%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, transparent 22%, transparent 45%, rgba(0, 0, 0, 0.45) 75%, rgba(0, 0, 0, 0.6) 100%),
+    radial-gradient(120% 90% at 85% 10%, rgba(var(--fx-accent), 0.12), transparent 60%) !important;
 }
 
-.layout-desktop .detailRibbon {
+.layout-mobile .itemBackdrop::after {
+  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.7) 85%, #000 100%) !important;
+}
+
+/* The ribbon must keep margin-top == -height (JF uses 7.2em): it is a
+   flex box beside a floated poster, so any vertical overlap with the
+   float shoves the title sideways. Taller pair = title, chips and
+   actions stacked over the bottom of the backdrop. */
+.layout-desktop #itemDetailPage .detailRibbon {
   background: transparent !important;
-  margin-top: 0;
+  height: 12em !important;
+  margin-top: -12em !important;
+  flex-direction: column;
+  flex-wrap: nowrap !important;
+  align-items: flex-start !important;
+  justify-content: flex-end;
+  gap: 0.9em;
+  padding-bottom: 0.4em;
+  box-sizing: border-box;
+}
+
+.layout-desktop #itemDetailPage .detailRibbon .infoWrapper {
+  flex: 0 0 auto !important;
+}
+
+.layout-desktop #itemDetailPage .detailRibbon .mainDetailButtons {
+  justify-content: flex-start !important;
+  margin: 0 !important;
 }
 
 .layout-desktop .detailPageWrapperContainer {
   background: linear-gradient(
     180deg,
-    transparent 10vh,
-    rgba(0, 0, 0, 0.55) 36vh,
-    #000 62vh
+    rgba(0, 0, 0, 0.6) 0,
+    rgba(0, 0, 0, 0.85) 30vh,
+    #000 60vh
   ) !important;
   min-height: 42vh;
 }
@@ -1645,9 +1819,18 @@ progress {
     0 0 0 1px rgba(var(--fx-accent), 0.2);
 }
 
+/* Keep JF's own poster offset (it overlaps the backdrop by design).
+   Forcing top:auto pushed the poster down over Cast & Crew. */
 .layout-desktop .detailImageContainer .card {
-  position: relative !important;
-  top: auto !important;
+  transition: transform 0.5s var(--fx-ease), box-shadow 0.5s var(--fx-ease);
+}
+
+.layout-desktop .detailImageContainer .card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 28px 60px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(var(--fx-accent), 0.45),
+    0 0 40px rgba(var(--fx-accent), 0.25);
 }
 
 .nameContainer > h1.itemName,
@@ -1760,6 +1943,7 @@ progress {
 #itemDetailPage .infoWrapper,
 #itemDetailPage .detailRibbon .nameContainer,
 #itemDetailPage .detailPagePrimaryContent .nameContainer {
+  box-sizing: border-box !important; /* mobile infoWrapper has % padding */
   flex: 1 1 auto !important;
   min-width: 0 !important;
   max-width: 100% !important;
@@ -1795,6 +1979,154 @@ progress {
   font-size: clamp(1rem, 2vw, 1.35rem) !important;
 }
 
+/* --- Hero metadata: year · runtime · rating as glass chips --- */
+#itemDetailPage .itemMiscInfo-primary {
+  flex-wrap: wrap;
+  gap: 0.45em;
+  row-gap: 0.45em;
+}
+
+#itemDetailPage .itemMiscInfo-primary > .mediaInfoItem {
+  margin: 0 !important;
+  padding: 0.22em 0.75em;
+  border-radius: var(--fx-radius-pill);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(var(--fx-blur-sm));
+  -webkit-backdrop-filter: blur(var(--fx-blur-sm));
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+  color: rgba(var(--fx-text), 0.92);
+}
+
+#itemDetailPage .itemMiscInfo-primary > .mediaInfoOfficialRating {
+  border-color: rgba(var(--fx-accent), 0.6);
+  background: rgba(var(--fx-accent), 0.14);
+  font-family: var(--fx-font-mono);
+  font-size: 0.82em;
+  padding: 0.32em 0.8em;
+}
+
+#itemDetailPage .itemMiscInfo-primary > .starRatingContainer {
+  border-color: rgba(var(--fx-gold), 0.4);
+  color: rgb(var(--fx-gold));
+}
+
+#itemDetailPage .itemMiscInfo-primary > .endsAt {
+  background: transparent;
+  border-color: transparent;
+  color: rgb(var(--fx-text-dim));
+  font-weight: 500;
+}
+
+/* --- Play: a labelled pill, like a streaming service --- */
+.btnPlay.detailButton {
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+}
+
+.layout-desktop .btnPlay.detailButton,
+.layout-tv .btnPlay.detailButton {
+  gap: 0.35em;
+  padding: 0 1.6em 0 1.2em !important;
+}
+
+.layout-desktop .btnPlay.detailButton::after,
+.layout-tv .btnPlay.detailButton::after {
+  content: attr(title);
+  font-family: var(--fx-font-ui);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.btnPlay.detailButton .detailButton-icon {
+  font-size: 1.9em;
+}
+
+.btnPlay.detailButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.75s var(--fx-ease);
+  pointer-events: none;
+}
+
+.btnPlay.detailButton:hover::before,
+.btnPlay.detailButton:focus-visible::before {
+  transform: translateX(120%);
+}
+
+.btnPlay.detailButton:hover {
+  box-shadow: 0 0 0 4px rgba(var(--fx-accent), 0.25), 0 0 34px rgba(var(--fx-accent), 0.6) !important;
+}
+
+/* Secondary actions: outlined glass circles */
+.mainDetailButtons .detailButton:not(.btnPlay) {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  margin: 0 0.12em;
+  width: 2.75em;
+  height: 2.75em;
+}
+
+.mainDetailButtons .detailButton:not(.btnPlay):hover {
+  background: rgba(var(--fx-accent), 0.18) !important;
+  border-color: rgba(var(--fx-accent), 0.75) !important;
+  box-shadow: 0 0 18px rgba(var(--fx-accent), 0.35);
+}
+
+/* --- Credits as chips --- */
+.itemDetailsGroup .detailsGroupItem .content a,
+.itemDetailsGroup .detailsGroupItem a.button-link {
+  display: inline-block;
+  margin: 0.12em 0.2em;
+  padding: 0.12em 0.7em;
+  border-radius: var(--fx-radius-pill);
+  background: rgba(var(--fx-accent), 0.1);
+  border: 1px solid rgba(var(--fx-accent), 0.3);
+  color: rgba(var(--fx-text), 0.95) !important;
+  font-weight: 600;
+  transition: background 0.2s var(--fx-ease), border-color 0.2s var(--fx-ease);
+}
+
+.itemDetailsGroup .detailsGroupItem a.button-link:hover {
+  background: rgb(var(--fx-accent));
+  border-color: rgb(var(--fx-accent));
+  color: #fff !important;
+}
+
+/* Episodes often have no credits: no empty framed strip */
+.itemDetailsGroup:not(:has(.detailsGroupItem:not(.hide))) {
+  display: none !important;
+}
+
+#itemDetailPage .overview-container,
+#itemDetailPage .overview {
+  font-size: 1.08rem;
+  line-height: 1.65;
+  color: rgba(var(--fx-text), 0.82);
+  max-width: 68ch;
+}
+
+/* --- Scroll: the backdrop dims as content rises over it --- */
+@supports (animation-timeline: scroll()) {
+  .layout-desktop #itemDetailPage .itemBackdrop {
+    animation: fx-backdrop-recede linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 70vh;
+  }
+
+  @keyframes fx-backdrop-recede {
+    to { opacity: 0.35; }
+  }
+}
+
 /* ============================================================
    14. OSD / PLAYER
    ============================================================ */
@@ -1824,19 +2156,16 @@ progress {
   background: var(--fx-osd-top) !important;
 }
 
-html:has(#videoOsdPage),
-html:has(#videoOsdPage) body,
-html:has(.videoOsdBottom),
+html:has(#videoOsdPage:not(.hide)),
+html:has(#videoOsdPage:not(.hide)) body,
 html:has(.osdHeader) body,
 html:has(.htmlvideoplayer) body {
   background: #000 !important;
   background-image: none !important;
 }
 
-html:has(#videoOsdPage) .backgroundContainer,
-html:has(#videoOsdPage) .backdropContainer,
-html:has(.videoOsdBottom) .backgroundContainer,
-html:has(.videoOsdBottom) .backdropContainer,
+html:has(#videoOsdPage:not(.hide)) .backgroundContainer,
+html:has(#videoOsdPage:not(.hide)) .backdropContainer,
 html:has(.osdHeader) .backgroundContainer,
 html:has(.osdHeader) .backdropContainer,
 html:has(.htmlvideoplayer) .backgroundContainer,
@@ -1874,9 +2203,9 @@ video {
   padding-right: 0 !important;
 }
 
-html:has(#videoOsdPage) .MuiAppBar-root,
-html:has(.osdHeader) .MuiAppBar-root,
-html:has(.videoOsdBottom) .MuiAppBar-root {
+html:has(#videoOsdPage:not(.hide)) .MuiAppBar-root,
+html:has(.osdHeader) .MuiAppBar-root {
+  animation: none !important;
   background: transparent !important;
   background-image: none !important;
   backdrop-filter: none !important;
@@ -2023,64 +2352,146 @@ html:has(.videoOsdBottom) .MuiAppBar-root {
    ============================================================ */
 #loginPage {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   min-height: 100vh;
-  background-color: #000 !important;
-  background-image: url("/Branding/Splashscreen") !important;
-  background-size: cover !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: clamp(5.5rem, 16vh, 9rem) 0 4vh !important;
+  background: #000 !important;
+  isolation: isolate;
 }
 
+/* Splash lives on its own layer so it can drift (Ken Burns) on the GPU.
+   The red nebula underneath is the fallback when no splash is uploaded. */
 #loginPage::after {
   content: "";
   position: fixed;
-  inset: 0;
-  z-index: 1;
+  inset: -4%;
+  z-index: -1;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.38) 0%,
-    rgba(0, 0, 0, 0.08) 42%,
-    rgba(0, 0, 0, 0.62) 100%
-  );
+  background:
+    radial-gradient(130% 90% at 50% 120%, rgba(0, 0, 0, 0.96) 22%, transparent 62%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.25) 30%, rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0.92) 100%),
+    radial-gradient(70% 60% at 50% 45%, transparent 30%, rgba(0, 0, 0, 0.7) 100%),
+    url("/Branding/Splashscreen") center / cover no-repeat,
+    radial-gradient(900px 520px at 20% 15%, rgba(var(--fx-accent), 0.32), transparent 60%),
+    radial-gradient(800px 600px at 85% 90%, rgba(120, 0, 20, 0.4), transparent 60%),
+    #000;
+  animation: fx-kenburns 38s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes fx-kenburns {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.09) translate3d(-1.5%, -1%, 0); }
 }
 
 #loginPage::before {
   content: var(--fx-server-name);
   position: fixed;
-  top: max(5vh, env(safe-area-inset-top, 0px) + 1.2rem);
+  top: max(4.5vh, env(safe-area-inset-top, 0px) + 1rem);
   left: 0;
   right: 0;
   text-align: center;
-  font-family: var(--fx-font-display);
-  font-weight: 900;
-  font-size: clamp(1.6rem, 5vw, 2.8rem);
-  letter-spacing: 0.28em;
+  font-family: var(--fx-font-brand);
+  font-weight: 400;
+  font-size: clamp(3rem, 8vw, 5.4rem);
+  line-height: 1;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fff;
-  text-shadow:
-    0 4px 28px rgba(0, 0, 0, 0.9),
-    0 0 36px rgba(var(--fx-accent), 0.45);
+  background: linear-gradient(180deg, rgb(var(--fx-accent-bright)) 0%, rgb(var(--fx-accent)) 50%, #8f0610 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: rgb(var(--fx-accent));
+  filter: drop-shadow(0 6px 30px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 28px rgba(var(--fx-accent), 0.55));
   pointer-events: none;
   z-index: 4;
+  animation: fx-wordmark-in 1.1s var(--fx-ease) both;
 }
 
+@keyframes fx-wordmark-in {
+  from {
+    opacity: 0;
+    letter-spacing: 0.32em;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.06em;
+    transform: none;
+  }
+}
+
+/* Glass card with a lit gradient edge (padding-box / border-box trick) */
 #loginPage .padded-left.padded-right.padded-bottom-page {
-  width: min(26em, 90vw);
-  border: 1px solid var(--fx-border) !important;
-  border-radius: 24px !important;
-  background: rgba(8, 2, 3, 0.52) !important;
-  backdrop-filter: blur(var(--fx-blur-lg)) saturate(140%);
+  width: min(27em, calc(100vw - 32px));
+  box-sizing: border-box;
+  border: 1px solid transparent !important;
+  border-radius: 26px !important;
+  background:
+    linear-gradient(180deg, rgba(14, 4, 6, 0.72), rgba(6, 1, 2, 0.82)) padding-box,
+    linear-gradient(150deg, rgba(var(--fx-accent), 0.85), rgba(var(--fx-accent), 0.12) 35%, rgba(255, 255, 255, 0.06) 65%, rgba(var(--fx-accent), 0.5)) border-box !important;
+  backdrop-filter: blur(var(--fx-blur-lg)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--fx-blur-lg)) saturate(150%);
   box-shadow:
-    0 0 60px rgba(var(--fx-accent), 0.16),
-    var(--fx-shadow),
+    0 0 80px rgba(var(--fx-accent), 0.18),
+    0 30px 80px rgba(0, 0, 0, 0.7),
     var(--fx-inset-glass);
-  padding: 1.6em 1.5em 1.1em !important;
-  margin: 0 auto 7vh !important;
+  padding: 1.7em 1.6em 1.1em !important;
+  margin: 0 auto !important;
   position: relative;
   z-index: 3;
+  animation: fx-card-rise 0.9s var(--fx-ease) 0.15s both;
+}
+
+@keyframes fx-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+#loginPage .emby-input {
+  background: rgba(0, 0, 0, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px !important;
+  height: 2.9em;
+  font-size: 1.05rem;
+  transition: border-color 0.25s var(--fx-ease), box-shadow 0.25s var(--fx-ease), background 0.25s var(--fx-ease);
+}
+
+#loginPage .emby-input:focus {
+  background: rgba(0, 0, 0, 0.6) !important;
+  border-color: rgb(var(--fx-accent)) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 4px rgba(var(--fx-accent), 0.2), 0 0 24px rgba(var(--fx-accent), 0.25);
+}
+
+#loginPage .inputLabel {
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(var(--fx-text), 0.6);
+}
+
+#loginPage .readOnlyContent {
+  margin-bottom: 0 !important;
+}
+
+#loginPage .inputLabelFocused {
+  color: rgb(var(--fx-accent-soft)) !important;
+}
+
+/* Visual (avatar) login: user tiles as glowing rings */
+#loginPage .visualLoginForm .card .cardScalable {
+  border-radius: 50% !important;
 }
 
 .manualLoginForm::before,
@@ -2381,9 +2792,8 @@ table:not(.MuiTable-root) {
   height: 36px !important;
 }
 
-.layout-mobile .MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img) {
-  font-size: 0.72rem !important;
-  letter-spacing: 0.1em !important;
+.layout-mobile .MuiToolbar-root .MuiButtonBase-root:has(.MuiButton-startIcon img)::after {
+  font-size: 1.65rem;
 }
 
 html.layout-mobile .MuiToolbar-root .MuiTypography-root,
@@ -2446,13 +2856,12 @@ html.layout-mobile .MuiTypography-h6 {
   }
 
   #loginPage::before {
-    letter-spacing: 0.18em;
-    font-size: 1.35rem;
+    font-size: 3.2rem;
+    letter-spacing: 0.05em;
   }
 
   #loginPage .padded-left.padded-right.padded-bottom-page {
-    margin-bottom: 4.5vh !important;
-    padding: 1.25em 1.1em 0.9em !important;
+    padding: 1.3em 1.15em 0.9em !important;
   }
 }
 
@@ -2642,7 +3051,7 @@ body:not(:has(.MuiAppBar-root)) .libraryPage:not(.noSecondaryNavPage) {
   }
 
   .layout-mobile #videoOsdPage.libraryPage,
-  html:has(#videoOsdPage) .libraryPage {
+  html:has(#videoOsdPage:not(.hide)) .libraryPage {
     padding: 0 !important;
   }
 

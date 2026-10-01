@@ -31,7 +31,7 @@ Custom CSS for the Jellyfin **web client**. Nothing is installed on the server b
 
 ## Wordmark
 
-Default login text is **Finflix**. To use your server name, add this *after* the import:
+Default header and login wordmark is **Finflix**. To use your server name, add this *after* the import:
 
 ```css
 :root {
