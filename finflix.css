@@ -539,6 +539,25 @@ header.MuiAppBar-root.MuiAppBar-root {
   padding-right: 12px !important;
 }
 
+/* Library toolbar (title · count · play/shuffle · filter · sort · view ·
+   pager): on a phone it is wider than the screen, and nowrap pushed the
+   page arrows off the right edge. Let it wrap; the controls flow onto a
+   second line, right-aligned, and stay reachable. */
+.MuiToolbar-root:has(.MuiButtonGroup-root) {
+  flex-wrap: wrap !important;
+  row-gap: 6px;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+.MuiToolbar-root:has(.MuiButtonGroup-root) > .MuiStack-root {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  row-gap: 6px;
+  min-width: 0;
+  margin-left: auto;
+}
+
 .MuiToolbar-root > .MuiBox-root:has(+ .MuiBox-root [aria-controls="app-user-menu"]) {
   flex-grow: 0 !important;
   flex-shrink: 1 !important;
